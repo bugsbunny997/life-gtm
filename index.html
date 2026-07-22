@@ -2,846 +2,910 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#05070d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>LIFE GTM · SYSTEM</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Life GTM">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Life GTM</title>
 <style>
 :root{
-  --bg:#05070d; --panel:#0b111f; --panel2:#0e1526; --edge:#1c2a47; --edge2:#27395f;
-  --tx:#dbe6ff; --dim:#7d90b8; --faint:#48587a;
-  --cy:#00e5ff; --mg:#ff2d78; --gd:#ffb300; --gr:#00ff9d; --pu:#a78bff; --rd:#ff4d5e;
-  --int:#00b3ff; --str:#00ff9d; --gld:#ffb300; --agi:#a78bff; --mnd:#ffd54f; --vit:#ff7a5c;
+  --bg:#f5f5f7; --card:#ffffff; --card2:#fbfbfd; --sep:rgba(0,0,0,.08);
+  --tx:#1d1d1f; --tx2:#6e6e73; --tx3:#aeaeb2;
+  --blue:#0071e3; --green:#30b352; --orange:#ff9500; --red:#ff3b30; --track:#e8e8ed;
+  --shadow:0 1px 3px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.05);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
-html,body{height:100%;}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#000000; --card:#1c1c1e; --card2:#161618; --sep:rgba(255,255,255,.1);
+    --tx:#f5f5f7; --tx2:#98989f; --tx3:#5c5c61;
+    --blue:#0a84ff; --green:#30d158; --orange:#ff9f0a; --red:#ff453a; --track:#2c2c2e;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
 body{
   background:var(--bg); color:var(--tx);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  padding-bottom:86px; overflow-x:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  min-height:100svh; padding-bottom:96px;
+  overscroll-behavior-y:contain;
+  font-size:16px; line-height:1.4;
 }
-body:before{ /* grid backdrop */
-  content:""; position:fixed; inset:0; z-index:-1; opacity:.5;
-  background-image:linear-gradient(rgba(28,42,71,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(28,42,71,.28) 1px,transparent 1px);
-  background-size:42px 42px;
-}
-body:after{ /* vignette */
-  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background:radial-gradient(120% 90% at 50% 0%, transparent 55%, rgba(0,0,0,.55));
-}
-.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
-.wrap{max-width:640px;margin:0 auto;padding:0 12px;}
+button{font-family:inherit; -webkit-tap-highlight-color:transparent;}
+.wrap{max-width:560px; margin:0 auto; padding:0 16px;}
 
-/* ============ SYSTEM PANELS ============ */
-.panel{
-  position:relative; background:linear-gradient(180deg,var(--panel),var(--panel2));
-  border:1px solid var(--edge); border-radius:4px; padding:14px;
-  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+/* ── header ── */
+header{padding:14px 0 2px; display:flex; align-items:center; justify-content:space-between;}
+.brand{font-size:15px; font-weight:600; letter-spacing:-.01em;}
+.hstats{display:flex; gap:8px; align-items:center;}
+.chip{
+  display:flex; align-items:center; gap:5px; background:var(--card); border-radius:100px;
+  padding:6px 12px; font-size:13px; font-weight:600; box-shadow:var(--shadow);
 }
-.panel.glow{box-shadow:0 0 24px rgba(0,229,255,.07), inset 0 0 24px rgba(0,229,255,.03);}
-.ptitle{
-  display:flex; align-items:center; gap:8px;
-  font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:2.5px;
-  color:var(--cy); text-transform:uppercase; margin-bottom:11px;
-}
-.ptitle:before{content:"◢"; font-size:8px;}
-.ptitle .r{margin-left:auto; color:var(--faint); letter-spacing:1px;}
+.chip .cl{color:var(--tx2); font-weight:500;}
+h1{font-size:30px; font-weight:700; letter-spacing:-.022em; margin:14px 0 2px;}
+.sub{font-size:14px; color:var(--tx2); margin-bottom:16px;}
 
-/* ============ HEADER / PLAYER BAR ============ */
-header{position:sticky; top:0; z-index:40; padding:10px 0 6px; background:linear-gradient(180deg,var(--bg) 70%,transparent);}
-.pcard{
-  position:relative; border:1px solid var(--edge2); border-radius:4px; padding:10px 12px;
-  background:linear-gradient(135deg,#0c1424 0%,#101b33 55%,#0c1424 100%);
-  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
-  overflow:hidden;
-}
-.pcard:before{content:""; position:absolute; inset:0; background:linear-gradient(100deg,transparent 30%,rgba(0,229,255,.08) 48%,transparent 60%); animation:sheen 5s infinite;}
-@keyframes sheen{0%{transform:translateX(-100%);}60%,100%{transform:translateX(100%);}}
-.prow{display:flex; align-items:center; gap:11px;}
-.avatar{
-  width:46px;height:46px; flex:0 0 46px; display:flex;align-items:center;justify-content:center;
-  font-size:24px; background:#0a0f1c; border:1px solid var(--cy); border-radius:4px;
-  box-shadow:0 0 12px rgba(0,229,255,.35), inset 0 0 10px rgba(0,229,255,.15);
-  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
-}
-.pinfo{flex:1; min-width:0;}
-.pname{font-weight:800; font-size:14px; letter-spacing:1px;}
-.pname span{color:var(--cy); font-size:10px; letter-spacing:2px; margin-left:6px;}
-.ptag{font-size:10px; color:var(--dim); letter-spacing:.5px; margin-top:1px;}
-.pright{text-align:right;}
-.lvl{font-family:ui-monospace,Menlo,monospace; font-size:19px; font-weight:800; color:var(--gd); text-shadow:0 0 12px rgba(255,179,0,.5); line-height:1;}
-.lvl small{font-size:9px; color:var(--dim); letter-spacing:2px; display:block; margin-bottom:2px;}
-.gold{font-family:ui-monospace,Menlo,monospace; font-size:11px; color:var(--gd); margin-top:3px;}
-.xpbar{position:relative; height:7px; margin-top:9px; background:#060a13; border:1px solid var(--edge); border-radius:2px; overflow:hidden;}
-.xpfill{position:absolute; inset:0 auto 0 0; width:0%; background:linear-gradient(90deg,var(--cy),var(--gr)); transition:width .5s ease; box-shadow:0 0 10px var(--cy);}
-.xptxt{display:flex; justify-content:space-between; font-family:ui-monospace,Menlo,monospace; font-size:9px; color:var(--faint); margin-top:4px; letter-spacing:1px;}
+/* ── cards ── */
+.card{background:var(--card); border-radius:18px; padding:18px; box-shadow:var(--shadow); margin-bottom:14px;}
+.cardtitle{font-size:13px; font-weight:600; color:var(--tx2); margin-bottom:12px; display:flex; justify-content:space-between; align-items:baseline;}
+.cardtitle .r{font-weight:500; font-size:12px; color:var(--tx3);}
+.sect{font-size:20px; font-weight:700; letter-spacing:-.02em; margin:24px 2px 12px;}
+.sect small{font-size:13px; font-weight:500; color:var(--tx2); margin-left:8px;}
 
-/* ============ NAV ============ */
+/* ── ring ── */
+.ringwrap{display:flex; align-items:center; gap:20px;}
+.ringbox{position:relative; width:132px; height:132px; flex:0 0 132px;}
+.ringbox canvas{width:100%; height:100%;}
+.ringcenter{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.ringcenter .n{font-size:30px; font-weight:700; letter-spacing:-.03em; line-height:1;}
+.ringcenter .l{font-size:11px; color:var(--tx2); margin-top:3px;}
+.ringinfo{flex:1;}
+.ringinfo .big{font-size:16px; font-weight:600; letter-spacing:-.01em; margin-bottom:4px;}
+.ringinfo .d{font-size:13px; color:var(--tx2); line-height:1.5;}
+.wonpill{display:none; margin-top:9px; background:var(--green); color:#fff; font-size:12px; font-weight:700; border-radius:100px; padding:5px 12px; width:max-content;}
+.wonpill.on{display:block;}
+
+/* ── rows ── */
+.row{display:flex; align-items:center; gap:13px; padding:13px 0; border-bottom:1px solid var(--sep); min-height:56px;}
+.row:last-child{border-bottom:none;}
+.ck{
+  width:28px; height:28px; flex:0 0 28px; border-radius:50%;
+  border:1.5px solid var(--tx3); cursor:pointer; position:relative; transition:all .18s ease;
+  display:flex; align-items:center; justify-content:center; background:transparent;
+}
+.ck svg{width:14px; height:14px; stroke:#fff; stroke-width:3; fill:none; opacity:0; transform:scale(.5); transition:all .18s ease;}
+.row.done .ck{background:var(--green); border-color:var(--green);}
+.row.done .ck svg{opacity:1; transform:scale(1);}
+.row .m{flex:1; min-width:0; cursor:pointer;}
+.row .t{font-size:15px; letter-spacing:-.01em; transition:color .18s;}
+.row.done .t{color:var(--tx3);}
+.row.skipped .t{color:var(--tx3); text-decoration:line-through;}
+.row .s{font-size:12px; color:var(--tx2); margin-top:2px;}
+.row .v{font-size:13px; font-weight:600; color:var(--tx2); white-space:nowrap;}
+.row.done .v{color:var(--green);}
+.row.rest{opacity:.4; pointer-events:none;}
+.skipbtn{background:none; border:none; color:var(--tx3); font-size:12px; font-weight:500; cursor:pointer; padding:8px 0 8px 8px;}
+.row.skipped .skipbtn{color:var(--orange);}
+
+/* ── segmented ── */
+.seg{display:flex; background:var(--track); border-radius:10px; padding:2px; margin-bottom:16px;}
+.seg button{
+  flex:1; border:none; background:none; padding:8px 0; font-size:13px; font-weight:600;
+  color:var(--tx2); border-radius:8px; cursor:pointer; transition:all .15s;
+}
+.seg button.on{background:var(--card); color:var(--tx); box-shadow:0 1px 4px rgba(0,0,0,.12);}
+.seg button .w{display:block; font-size:10px; font-weight:500; color:var(--green); height:12px;}
+
+/* ── milestones ── */
+.mile{padding:16px 0; border-bottom:1px solid var(--sep);}
+.mile:last-child{border-bottom:none;}
+.mile .top{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:4px;}
+.mile .n{font-size:15px; font-weight:600; letter-spacing:-.01em;}
+.mile .pct{font-size:13px; font-weight:600; color:var(--tx2); white-space:nowrap;}
+.mile .d{font-size:13px; color:var(--tx2); line-height:1.5; margin-bottom:10px;}
+.mbar{height:6px; background:var(--track); border-radius:3px; overflow:hidden;}
+.mbar i{display:block; height:100%; width:0%; background:var(--blue); border-radius:3px; transition:width .5s ease;}
+.mile.done .mbar i{background:var(--green);}
+.mile .act{margin-top:12px;}
+.mbtn{
+  width:100%; padding:12px; border-radius:12px; border:none; cursor:pointer;
+  background:var(--track); color:var(--tx); font-size:14px; font-weight:600; transition:all .15s;
+}
+.mbtn.rdy{background:var(--blue); color:#fff;}
+.mile.done .mbtn{background:transparent; color:var(--green); border:1.5px solid var(--green);}
+.ladrow{display:flex; gap:12px; align-items:center; padding:13px 0; border-bottom:1px solid var(--sep); cursor:pointer;}
+.ladrow:last-child{border-bottom:none;}
+.ladrow .dot{width:10px; height:10px; flex:0 0 10px; border-radius:50%; background:var(--track);}
+.ladrow.got .dot{background:var(--green);}
+.ladrow .m{flex:1;}
+.ladrow .t{font-size:14px; font-weight:600; letter-spacing:-.01em;}
+.ladrow.got .t{color:var(--tx3);}
+.ladrow .s{font-size:12px; color:var(--tx2); margin-top:1px;}
+.ladrow .w{font-size:12px; font-weight:600; color:var(--tx2); white-space:nowrap;}
+.ladrow.got .w{color:var(--green);}
+
+/* ── shop ── */
+.balance{font-size:44px; font-weight:700; letter-spacing:-.03em;}
+.balance small{font-size:15px; font-weight:600; color:var(--tx2); margin-left:6px;}
+.itemrow{display:flex; align-items:center; gap:13px; padding:13px 0; border-bottom:1px solid var(--sep);}
+.itemrow:last-child{border-bottom:none;}
+.itemrow .m{flex:1;}
+.itemrow .t{font-size:15px; font-weight:500; letter-spacing:-.01em;}
+.itemrow .s{font-size:12px; color:var(--tx2); margin-top:2px;}
+.pbtn{
+  min-width:74px; padding:8px 14px; border-radius:100px; border:none; cursor:pointer;
+  background:var(--track); color:var(--blue); font-size:13px; font-weight:700; white-space:nowrap;
+}
+.pbtn.can{background:var(--blue); color:#fff;}
+.pbtn.owned{background:transparent; color:var(--green); border:1.5px solid var(--green);}
+.pbtn:disabled{color:var(--tx3); background:var(--track);}
+.badges{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+.bdg{
+  aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  background:var(--card); border-radius:14px; box-shadow:var(--shadow); padding:6px; text-align:center; cursor:pointer;
+}
+.bdg .e{font-size:22px; filter:grayscale(1); opacity:.25;}
+.bdg .n{font-size:9px; font-weight:600; color:var(--tx3); line-height:1.25;}
+.bdg.ok .e{filter:none; opacity:1;}
+.bdg.ok .n{color:var(--tx);}
+
+/* ── you ── */
+.attr{display:flex; align-items:center; gap:12px; padding:9px 0;}
+.attr .k{font-size:13px; font-weight:500; width:72px; color:var(--tx2);}
+.attr .bar{flex:1; height:6px; background:var(--track); border-radius:3px; overflow:hidden;}
+.attr .bar i{display:block; height:100%; background:var(--blue); border-radius:3px; transition:width .4s;}
+.attr .v{font-size:13px; font-weight:600; width:28px; text-align:right; color:var(--tx2);}
+.wchart{display:flex; gap:10px; align-items:flex-end; height:88px; padding-top:14px;}
+.wcol{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end;}
+.wbar{width:100%; max-width:44px; background:var(--track); border-radius:6px; position:relative; overflow:hidden; flex:1; display:flex; align-items:flex-end;}
+.wbar i{display:block; width:100%; background:var(--blue); border-radius:6px; min-height:2px;}
+.wbar.win i{background:var(--green);}
+.wcol .l{font-size:11px; font-weight:600; color:var(--tx2);}
+.wcol .n{font-size:11px; color:var(--tx3);}
+.jrow{padding:11px 0; border-bottom:1px solid var(--sep);}
+.jrow:last-child{border-bottom:none;}
+.jrow .t{font-size:14px; font-weight:500;}
+.jrow .s{font-size:12px; color:var(--tx2); margin-top:2px;}
+.ghost{
+  width:100%; padding:13px; border-radius:12px; border:none; cursor:pointer; margin-top:10px;
+  background:var(--track); color:var(--tx); font-size:14px; font-weight:600;
+}
+.ghost.danger{color:var(--red);}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.note{font-size:12.5px; color:var(--tx2); line-height:1.55;}
+.empty{padding:26px 10px; text-align:center; color:var(--tx2); font-size:14px; line-height:1.6;}
+
+/* ── nav ── */
 nav{
-  position:fixed; bottom:0; left:0; right:0; z-index:60;
-  background:rgba(7,11,20,.96); border-top:1px solid var(--edge2);
-  display:flex; justify-content:space-around; padding:7px 2px calc(9px + env(safe-area-inset-bottom));
-  backdrop-filter:blur(8px);
+  position:fixed; bottom:0; left:0; right:0; z-index:50;
+  background:color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px);
+  border-top:1px solid var(--sep);
+  display:flex; justify-content:space-around;
+  padding:6px 8px calc(8px + env(safe-area-inset-bottom));
 }
 nav button{
-  background:none; border:none; color:var(--faint); cursor:pointer; font-family:inherit;
-  display:flex; flex-direction:column; align-items:center; gap:2px; padding:3px 8px;
-  font-size:8.5px; letter-spacing:1.5px; text-transform:uppercase;
+  background:none; border:none; cursor:pointer; color:var(--tx3);
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  font-size:10px; font-weight:600; padding:5px 10px; min-width:56px;
 }
-nav button .ic{font-size:18px; filter:grayscale(1) opacity(.6); transition:all .2s;}
-nav button.on{color:var(--cy);}
-nav button.on .ic{filter:none; transform:translateY(-2px); text-shadow:0 0 14px var(--cy);}
-nav button .bdg{position:absolute; display:none;}
+nav button svg{width:23px; height:23px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;}
+nav button.on{color:var(--blue);}
 
-/* ============ SCREENS ============ */
-.screen{display:none; animation:in .25s ease;}
-.screen.on{display:block;}
-@keyframes in{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
-h3.sec{font-family:ui-monospace,Menlo,monospace; font-size:10px; letter-spacing:2.5px; color:var(--dim); text-transform:uppercase; margin:18px 2px 9px;}
-h3.sec b{color:var(--cy);}
-
-/* ============ QUEST / HABIT ROWS ============ */
-.q{
-  position:relative; display:flex; align-items:center; gap:11px; margin-bottom:8px;
-  background:linear-gradient(180deg,var(--panel),var(--panel2));
-  border:1px solid var(--edge); border-left:3px solid var(--acc,var(--edge2));
-  border-radius:3px; padding:11px 12px;
-  clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);
-}
-.q .box{
-  flex:0 0 24px; height:24px; border:1.5px solid var(--faint); border-radius:3px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; font-size:13px; color:transparent; transition:all .15s;
-}
-.q.done{border-left-color:var(--gr);}
-.q.done .box{background:var(--gr); border-color:var(--gr); color:#03140b; box-shadow:0 0 10px rgba(0,255,157,.5);}
-.q .body{flex:1; min-width:0;}
-.q .t{font-size:12.5px; line-height:1.4;}
-.q.done .t{color:var(--dim); text-decoration:line-through;}
-.q.skipped .t{color:var(--faint); font-style:italic; text-decoration:line-through;}
-.q .meta{font-family:ui-monospace,Menlo,monospace; font-size:9px; color:var(--faint); margin-top:3px; letter-spacing:1px;}
-.q .rew{font-family:ui-monospace,Menlo,monospace; font-size:10px; text-align:right; line-height:1.5; white-space:nowrap;}
-.q .rew .x{color:var(--cy);} .q .rew .g{color:var(--gd);}
-.q .skp{position:absolute; right:8px; bottom:6px; font-size:8.5px; color:var(--faint); background:none; border:1px solid var(--edge); border-radius:2px; padding:1px 5px; cursor:pointer; font-family:ui-monospace,Menlo,monospace; letter-spacing:1px;}
-.q.skipped .skp{color:var(--gd); border-color:var(--gd);}
-.q.locked{opacity:.45; pointer-events:none;}
-.dayflip{display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:4px;}
-.dayflip button{flex:0 0 auto; font-family:ui-monospace,Menlo,monospace; font-size:10px; letter-spacing:1px; background:var(--panel); color:var(--dim); border:1px solid var(--edge); border-radius:3px; padding:7px 11px; cursor:pointer;}
-.dayflip button.on{color:var(--cy); border-color:var(--cy); box-shadow:0 0 8px rgba(0,229,255,.25);}
-.dayflip button.wn{color:var(--gr); border-color:var(--gr);}
-
-/* ============ WEEK METER ============ */
-.wmeter{position:relative; height:26px; background:#060a13; border:1px solid var(--edge2); border-radius:3px; overflow:hidden;}
-.wfill{position:absolute; inset:0 auto 0 0; width:0%; background:linear-gradient(90deg,#005f73,var(--cy) 55%,var(--gr)); transition:width .7s cubic-bezier(.22,1,.36,1); box-shadow:0 0 16px rgba(0,229,255,.4);}
-.wfill:after{content:""; position:absolute; inset:0; background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.25) 50%,transparent 60%); animation:sheen 2.6s infinite;}
-.wmark{position:absolute; top:0; bottom:0; width:2px; background:rgba(255,179,0,.85); z-index:2;}
-.wmark span{position:absolute; top:-16px; left:-16px; width:34px; text-align:center; font-family:ui-monospace,Menlo,monospace; font-size:8px; color:var(--gd); letter-spacing:1px;}
-.wmark.mvw{background:rgba(125,144,184,.6);} .wmark.mvw span{color:var(--faint);}
-.wstat{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
-.wstat .big{font-family:ui-monospace,Menlo,monospace; font-size:21px; font-weight:800; color:var(--tx);}
-.wstat .big b{color:var(--cy);}
-.wstat .sub{font-size:10px; color:var(--dim); letter-spacing:1px;}
-.wonflag{margin-top:9px; text-align:center; font-family:ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:3px; color:var(--gr); text-shadow:0 0 14px rgba(0,255,157,.6); display:none; animation:pulse 1.6s infinite;}
-.wonflag.on{display:block;}
-@keyframes pulse{50%{opacity:.55;}}
-
-/* ============ RAID / BOSS ============ */
-.raid{
-  position:relative; margin-bottom:12px; padding:14px;
-  background:linear-gradient(160deg,#140a16,#0b111f 70%);
-  border:1px solid #3a1c33; border-radius:4px;
-  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
-}
-.raid.dead{border-color:#134231; background:linear-gradient(160deg,#07130e,#0b111f 70%);}
-.raid .rt{display:flex; gap:10px; align-items:center;}
-.raid .rico{width:40px;height:40px;flex:0 0 40px;display:flex;align-items:center;justify-content:center;font-size:22px;background:#0a0f1c;border:1px solid var(--mg);border-radius:3px;box-shadow:0 0 10px rgba(255,45,120,.3);}
-.raid.dead .rico{border-color:var(--gr); box-shadow:0 0 10px rgba(0,255,157,.3); filter:grayscale(1);}
-.raid .rn{flex:1; min-width:0;}
-.raid .rn b{font-size:13px; letter-spacing:.5px; display:block; line-height:1.35;}
-.raid .rn small{font-family:ui-monospace,Menlo,monospace; font-size:9px; color:var(--mg); letter-spacing:2px;}
-.raid.dead .rn small{color:var(--gr);}
-.raid .rn u{font-size:10px; color:var(--dim); text-decoration:none; display:block; margin-top:3px; line-height:1.45;}
-.hpbar{position:relative; height:14px; margin-top:10px; background:#060a13; border:1px solid #3a1c33; border-radius:2px; overflow:hidden;}
-.hpfill{position:absolute; inset:0 auto 0 0; background:linear-gradient(90deg,#7a1029,var(--mg)); transition:width .6s; box-shadow:0 0 10px rgba(255,45,120,.4);}
-.hptxt{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:ui-monospace,Menlo,monospace; font-size:8.5px; letter-spacing:2px; color:#ffd9e6; z-index:2;}
-.raid .actions{display:flex; gap:8px; margin-top:10px;}
-.fblow{flex:1; font-family:ui-monospace,Menlo,monospace; letter-spacing:2px; font-size:10.5px; padding:10px; background:none; border:1px solid var(--mg); color:var(--mg); border-radius:3px; cursor:pointer; font-weight:700;}
-.fblow.rdy{animation:pulse 1.2s infinite; box-shadow:0 0 14px rgba(255,45,120,.35);}
-.raid.dead .fblow{border-color:var(--gr); color:var(--gr); animation:none;}
-.dmgfloat{position:absolute; font-family:ui-monospace,Menlo,monospace; font-weight:800; color:var(--mg); text-shadow:0 0 8px rgba(255,45,120,.8); font-size:15px; pointer-events:none; animation:dmg .9s forwards; z-index:5;}
-@keyframes dmg{from{opacity:1; transform:translateY(0) scale(1);} to{opacity:0; transform:translateY(-30px) scale(1.25);}}
-
-/* ============ SHOP / BADGES ============ */
-.item{display:flex; align-items:center; gap:11px; margin-bottom:8px; background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--edge); border-radius:3px; padding:11px 12px;}
-.item .ii{font-size:20px; width:34px; text-align:center;}
-.item .in{flex:1; font-size:12px; line-height:1.4;}
-.item .in small{display:block; color:var(--faint); font-size:9.5px; font-family:ui-monospace,Menlo,monospace; letter-spacing:.5px; margin-top:2px;}
-.buy{font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:1px; padding:8px 12px; border-radius:3px; border:1px solid var(--gd); color:var(--gd); background:none; cursor:pointer; white-space:nowrap;}
-.buy[disabled]{border-color:var(--edge); color:var(--faint);}
-.buy.owned{border-color:var(--gr); color:var(--gr);}
-.badges{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
-.bdg{aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:var(--panel); border:1px solid var(--edge); border-radius:3px; padding:6px; text-align:center;}
-.bdg .e{font-size:21px; filter:grayscale(1) opacity(.3);}
-.bdg .n{font-size:7.5px; letter-spacing:.5px; color:var(--faint); text-transform:uppercase; font-family:ui-monospace,Menlo,monospace; line-height:1.3;}
-.bdg.ok{border-color:var(--gd); box-shadow:0 0 10px rgba(255,179,0,.2);}
-.bdg.ok .e{filter:none;} .bdg.ok .n{color:var(--gd);}
-
-/* ============ PLAYER SCREEN ============ */
-.statgrid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;}
-.strow{display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--edge); border-radius:3px; padding:8px 10px;}
-.strow .k{font-family:ui-monospace,Menlo,monospace; font-size:10px; letter-spacing:2px; width:34px; color:var(--sc);}
-.strow .bar{flex:1; height:5px; background:#060a13; border-radius:2px; overflow:hidden;}
-.strow .bar i{display:block; height:100%; background:var(--sc); box-shadow:0 0 6px var(--sc);}
-.strow .v{font-family:ui-monospace,Menlo,monospace; font-size:10px; color:var(--dim); width:24px; text-align:right;}
-.ladrow{display:flex; gap:10px; align-items:center; padding:10px 2px; border-bottom:1px solid var(--edge);}
-.ladrow .li{font-size:18px; width:28px; text-align:center;}
-.ladrow .ln{flex:1; font-size:11.5px; line-height:1.4;}
-.ladrow .ln small{display:block; color:var(--faint); font-size:9.5px; margin-top:1px;}
-.ladrow .ld{font-family:ui-monospace,Menlo,monospace; font-size:9px; color:var(--gd); letter-spacing:1px; white-space:nowrap;}
-.ladrow.got .ln{color:var(--dim); text-decoration:line-through;}
-.mini{display:flex; gap:7px; align-items:flex-end; height:70px; padding:6px 2px 0;}
-.mini .mb{flex:1; background:linear-gradient(180deg,var(--cy),#005f73); border-radius:2px 2px 0 0; min-height:2px; position:relative;}
-.mini .mb i{position:absolute; top:-14px; left:0; right:0; text-align:center; font-size:8.5px; font-family:ui-monospace,Menlo,monospace; color:var(--dim); font-style:normal;}
-.mini .mb u{position:absolute; bottom:-15px; left:0; right:0; text-align:center; font-size:8.5px; font-family:ui-monospace,Menlo,monospace; color:var(--faint); text-decoration:none;}
-.btn{width:100%; margin-top:8px; font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:2px; padding:11px; background:none; border:1px solid var(--edge2); color:var(--dim); border-radius:3px; cursor:pointer;}
-.btn.warn{border-color:#4a1c26; color:var(--rd);}
-.row2{display:flex; gap:8px;} .row2 .btn{flex:1;}
-
-/* ============ FX ============ */
-#cfx{position:fixed; inset:0; pointer-events:none; z-index:90;}
-.orb{position:fixed; width:10px; height:10px; border-radius:50%; background:var(--cy); box-shadow:0 0 12px var(--cy); z-index:80; pointer-events:none; transition:all .65s cubic-bezier(.5,-0.2,.6,1);}
-#lvlup{
-  position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center; flex-direction:column; gap:8px;
-  background:radial-gradient(60% 45% at 50% 45%, rgba(0,229,255,.16), rgba(5,7,13,.94));
-}
-#lvlup.on{display:flex; animation:in .3s;}
-#lvlup .l1{font-family:ui-monospace,Menlo,monospace; letter-spacing:6px; font-size:12px; color:var(--cy);}
-#lvlup .l2{font-size:52px; font-weight:900; color:var(--gd); text-shadow:0 0 30px rgba(255,179,0,.8); font-family:ui-monospace,Menlo,monospace;}
-#lvlup .l3{font-size:13px; color:var(--tx); letter-spacing:2px;}
-#lvlup .l4{font-size:10px; color:var(--dim); margin-top:10px; letter-spacing:1px;}
+/* ── screens/fx ── */
+.screen{display:none;}
+.screen.on{display:block; animation:fadein .22s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+@media (prefers-reduced-motion: reduce){ .screen.on{animation:none;} *{transition-duration:0s !important;} }
 #toast{
-  position:fixed; bottom:92px; left:50%; transform:translateX(-50%); z-index:85;
-  background:#0d1526; border:1px solid var(--edge2); border-left:3px solid var(--cy);
-  color:var(--tx); padding:10px 14px; font-size:11.5px; max-width:86%; text-align:left;
-  opacity:0; transition:opacity .25s; border-radius:3px; line-height:1.45;
+  position:fixed; bottom:96px; left:50%; transform:translateX(-50%); z-index:70;
+  background:var(--tx); color:var(--bg); padding:11px 18px; border-radius:100px;
+  font-size:13px; font-weight:500; max-width:86%; text-align:center;
+  opacity:0; pointer-events:none; transition:opacity .25s;
 }
-.sndtgl{position:absolute; top:8px; right:10px; z-index:5; background:none; border:none; font-size:13px; cursor:pointer; opacity:.55;}
-.gutcell{display:flex; gap:6px; flex-wrap:wrap;}
-.gc{flex:1 1 56px; max-width:70px; text-align:center; padding:7px 0; background:var(--panel); border:1px solid var(--edge); border-radius:3px; cursor:pointer;}
-.gc .d{font-family:ui-monospace,Menlo,monospace; font-size:8.5px; color:var(--faint); letter-spacing:1px;}
-.gc .s{font-size:15px; margin-top:2px;}
-.gc.g1{border-color:#2c5a7a;} .gc.g2{border-color:var(--gr); box-shadow:0 0 8px rgba(0,255,157,.25);}
-.note{font-size:10.5px; color:var(--faint); line-height:1.55; margin-top:8px;}
+#cfx{position:fixed; inset:0; pointer-events:none; z-index:80;}
+#intro{
+  position:fixed; inset:0; z-index:100; background:var(--bg); display:none;
+  align-items:center; justify-content:center; padding:28px;
+}
+#intro.on{display:flex;}
+.introbox{max-width:420px;}
+.introbox .step{display:none;}
+.introbox .step.on{display:block; animation:fadein .3s;}
+.introbox h2{font-size:28px; font-weight:700; letter-spacing:-.02em; margin-bottom:10px;}
+.introbox p{font-size:15px; color:var(--tx2); line-height:1.6; margin-bottom:8px;}
+.introbox .cta{margin-top:22px; width:100%; padding:15px; border:none; border-radius:14px; background:var(--blue); color:#fff; font-size:16px; font-weight:600; cursor:pointer;}
+.dots{display:flex; gap:6px; margin-top:18px; justify-content:center;}
+.dots i{width:7px; height:7px; border-radius:50%; background:var(--track);}
+.dots i.on{background:var(--blue);}
+#lvlup{
+  position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--bg) 60%, transparent);
+  -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+}
+#lvlup.on{display:flex;}
+#lvlup .box{background:var(--card); border-radius:24px; padding:34px 40px; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,.25); animation:pop .35s cubic-bezier(.2,1.4,.4,1);}
+@keyframes pop{from{transform:scale(.8); opacity:0;} to{transform:scale(1); opacity:1;}}
+#lvlup .a{font-size:13px; font-weight:600; color:var(--tx2);}
+#lvlup .b{font-size:56px; font-weight:800; letter-spacing:-.04em; margin:4px 0; color:var(--blue);}
+#lvlup .c{font-size:15px; font-weight:600;}
+#lvlup .d{font-size:12px; color:var(--tx3); margin-top:14px;}
 </style>
 </head>
 <body>
 <canvas id="cfx"></canvas>
-<div id="lvlup" onclick="this.classList.remove('on')">
-  <div class="l1">◢ SYSTEM NOTICE ◣</div>
-  <div class="l2" id="lvnum">LV.2</div>
-  <div class="l3" id="lvtitle"></div>
-  <div class="l4">[ TAP TO CONTINUE ]</div>
-</div>
 <div id="toast"></div>
 
+<div id="intro">
+  <div class="introbox">
+    <div class="step on">
+      <h2>One system.<br>Your whole game.</h2>
+      <p>Career, running, the waffle store, badminton, money — all five run every week. Check things off, the ring fills.</p>
+    </div>
+    <div class="step">
+      <h2>Close the ring,<br>win the week.</h2>
+      <p>10 weekly quests + daily directives earn XP. Hit the win line and the week is cleared — that unlocks your treats.</p>
+      <p>Every action also auto-fills your monthly milestones. Complete them for real, log them with a note.</p>
+    </div>
+    <div class="step">
+      <h2>Earned,<br>never borrowed.</h2>
+      <p>Points buy rewards in the shop. Milestones unlock your ladder — watch, camera, iPhone, and the ₹18L car in pure cash.</p>
+      <p>Bad week? One skip per week, two shields per month. The system bends, it doesn't break.</p>
+    </div>
+    <button class="cta" id="introbtn">Continue</button>
+    <div class="dots"><i class="on"></i><i></i><i></i></div>
+  </div>
+</div>
+
+<div id="lvlup" onclick="this.classList.remove('on')">
+  <div class="box">
+    <div class="a">LEVEL UP</div>
+    <div class="b" id="lvnum">2</div>
+    <div class="c" id="lvtitle"></div>
+    <div class="d">Tap to continue</div>
+  </div>
+</div>
+
 <div class="wrap">
-<header>
-  <div class="pcard">
-    <button class="sndtgl" id="snd" onclick="toggleSound(event)">🔊</button>
-    <div class="prow">
-      <div class="avatar">🐺</div>
-      <div class="pinfo">
-        <div class="pname">AKSHAY <span>// THE OPERATOR</span></div>
-        <div class="ptag" id="ptitle"></div>
-      </div>
-      <div class="pright">
-        <div class="lvl"><small>LEVEL</small><span id="plvl">1</span></div>
-        <div class="gold" id="pgold">◈ 0 G</div>
+  <header>
+    <div class="brand">Life GTM</div>
+    <div class="hstats">
+      <div class="chip"><span class="cl">Lv</span><span id="hlvl">1</span></div>
+      <div class="chip"><span id="hpts">0</span><span class="cl">pts</span></div>
+    </div>
+  </header>
+
+  <!-- ═══ TODAY ═══ -->
+  <div class="screen on" id="s-today">
+    <h1 id="greet">Today</h1>
+    <div class="sub" id="datesub"></div>
+
+    <div class="card">
+      <div class="ringwrap">
+        <div class="ringbox">
+          <canvas id="ring"></canvas>
+          <div class="ringcenter"><div class="n" id="ringxp">0</div><div class="l" id="ringlbl">of 60</div></div>
+        </div>
+        <div class="ringinfo">
+          <div class="big" id="ringtitle">Week 1</div>
+          <div class="d" id="ringdesc"></div>
+          <div class="wonpill" id="wonpill">Week cleared ✓</div>
+        </div>
       </div>
     </div>
-    <div class="xpbar"><div class="xpfill" id="xpfill"></div></div>
-    <div class="xptxt"><span id="xpcur">0 XP</span><span id="xpnext"></span></div>
-  </div>
-</header>
 
-<!-- ═══════ TODAY ═══════ -->
-<div class="screen on" id="s-today">
-  <div class="panel glow" style="margin-top:8px;">
-    <div class="ptitle">Daily Directives <span class="r" id="todaydate"></span></div>
-    <div id="habitlist"></div>
-    <div class="note" id="dstreaknote"></div>
-  </div>
-  <div class="panel" style="margin-top:12px;">
-    <div class="ptitle">Today's Fuel <span class="r">GUT PROTOCOL</span></div>
-    <div id="todayfuel" style="font-size:12px; line-height:1.7;"></div>
-  </div>
-  <div class="panel" style="margin-top:12px;">
-    <div class="ptitle">Weekly Progress <span class="r" id="wklabel2"></span></div>
-    <div class="wstat"><span class="big" id="wxp2">0<b>/110</b></span><span class="sub" id="wverdict"></span></div>
-    <div class="wmeter">
-      <div class="wfill" id="wfill2"></div>
-      <div class="wmark mvw" id="m50"><span>SRV 50</span></div>
-      <div class="wmark" id="mwin"><span id="mwintxt">WIN</span></div>
+    <div class="card">
+      <div class="cardtitle">Daily directives <span class="r" id="chainlbl"></span></div>
+      <div id="habitlist"></div>
     </div>
-    <div class="wonflag" id="wonflag">■ WEEK CLEARED ■</div>
+
+    <div class="card">
+      <div class="cardtitle">Today's fuel <span class="r">dinner is fixed — these balance it</span></div>
+      <div id="fuel" style="font-size:14px; line-height:1.8;"></div>
+    </div>
+  </div>
+
+  <!-- ═══ QUESTS ═══ -->
+  <div class="screen" id="s-quests">
+    <h1>Quests</h1>
+    <div class="sub">10 per week · 2 per area · win at the line</div>
+    <div class="seg" id="seg"></div>
+    <div id="questarea"></div>
+  </div>
+
+  <!-- ═══ MILESTONES ═══ -->
+  <div class="screen" id="s-miles">
+    <h1>Milestones</h1>
+    <div class="sub">Progress fills from your real actions</div>
+    <div class="card"><div class="cardtitle">August</div><div id="milelist"></div></div>
+    <div class="card"><div class="cardtitle">The ladder <span class="r">cash only, zero debt</span></div><div id="ladder"></div></div>
+  </div>
+
+  <!-- ═══ REWARDS ═══ -->
+  <div class="screen" id="s-shop">
+    <h1>Rewards</h1>
+    <div class="sub">Earned, never borrowed</div>
+    <div class="card">
+      <div class="cardtitle">Balance</div>
+      <div class="balance" id="balance">0<small>points</small></div>
+    </div>
+    <div class="card"><div class="cardtitle">Shop</div><div id="shoplist"></div></div>
+    <h3 class="sect">Achievements <small id="achcount"></small></h3>
+    <div class="badges" id="badgegrid" style="margin-bottom:16px;"></div>
+  </div>
+
+  <!-- ═══ YOU ═══ -->
+  <div class="screen" id="s-you">
+    <h1 id="youname">Akshay</h1>
+    <div class="sub" id="youtitle"></div>
+    <div class="card"><div class="cardtitle">Attributes</div><div id="attrs"></div></div>
+    <div class="card"><div class="cardtitle">Season 1 · weekly XP</div><div class="wchart" id="wchart"></div></div>
+    <div class="card"><div class="cardtitle">Buffers</div><div class="note" id="buffers"></div><div id="shieldbtns"></div></div>
+    <div class="card"><div class="cardtitle">Journal</div><div id="journal"></div></div>
+    <div class="card">
+      <div class="cardtitle">Data</div>
+      <div class="note">Saves live on this device. Export a backup every Sunday; import it anywhere to continue.</div>
+      <div class="grid2" style="margin-top:10px;">
+        <button class="ghost" style="margin-top:0" onclick="exportData()">Export save</button>
+        <button class="ghost" style="margin-top:0" onclick="document.getElementById('imp').click()">Import</button>
+      </div>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="ghost" onclick="copySummary()">Copy week report</button>
+      <button class="ghost" id="sndbtn" onclick="toggleSound()"></button>
+      <button class="ghost" onclick="showIntro()">Replay intro</button>
+      <button class="ghost danger" onclick="resetAll()">Erase run</button>
+    </div>
   </div>
 </div>
 
-<!-- ═══════ QUESTS ═══════ -->
-<div class="screen" id="s-quests">
-  <div class="dayflip" id="wpick" style="margin-top:8px;"></div>
-  <div id="questlist"></div>
-  <h3 class="sec">◢ GUT CHAIN — <b id="gutcount"></b></h3>
-  <div class="panel"><div class="gutcell" id="gutchips"></div>
-  <div class="note">⚪ → 🌗 one meal on-plan → ✅ both. <span id="gutneed"></span>+ full days = <b style="color:var(--gr)">+10 XP +10 G</b></div></div>
-</div>
-
-<!-- ═══════ RAIDS ═══════ -->
-<div class="screen" id="s-raids">
-  <h3 class="sec" style="margin-top:14px;">◢ AUGUST RAID BOSSES — <b>REAL DAMAGE ONLY</b></h3>
-  <div class="note" style="margin:0 2px 10px;">Your completed quests & directives deal damage automatically. When a boss is WEAKENED, land the final blow — but only if you truly did it. The System knows.</div>
-  <div id="raidlist"></div>
-</div>
-
-<!-- ═══════ SHOP ═══════ -->
-<div class="screen" id="s-shop">
-  <h3 class="sec" style="margin-top:14px;">◢ REWARD SHOP — <b id="shopgold"></b></h3>
-  <div class="note" style="margin:0 2px 10px;">Gold is earned, never borrowed — same rule as your life. Weekly treats need the week cleared. Big-ticket items are your L1→L5 ladder: game gold won't buy them, reality will.</div>
-  <div id="shoplist"></div>
-  <h3 class="sec">◢ Achievements</h3>
-  <div class="badges" id="badgegrid"></div>
-</div>
-
-<!-- ═══════ PLAYER ═══════ -->
-<div class="screen" id="s-player">
-  <div class="panel" style="margin-top:12px;">
-    <div class="ptitle">Attributes</div>
-    <div class="statgrid" id="stats"></div>
-  </div>
-  <div class="panel" style="margin-top:12px;">
-    <div class="ptitle">Season 1 — Weekly XP</div>
-    <div class="mini" id="mini"></div>
-    <div style="height:16px;"></div>
-  </div>
-  <div class="panel" style="margin-top:12px;">
-    <div class="ptitle">The Ladder <span class="r">REALITY TIER</span></div>
-    <div id="ladder"></div>
-  </div>
-  <div class="panel" style="margin-top:12px;">
-    <div class="ptitle">Shields &amp; Tokens</div>
-    <div id="shieldinfo" class="note" style="margin-top:0;"></div>
-  </div>
-  <div class="panel" style="margin-top:12px; margin-bottom:20px;">
-    <div class="ptitle">Save Data</div>
-    <div class="note" style="margin-top:0;">Auto-saves to this device. Export every Sunday. Import on any device to continue your run.</div>
-    <div class="row2"><button class="btn" onclick="exportData()">⬇ EXPORT SAVE</button><button class="btn" onclick="document.getElementById('imp').click()">⬆ IMPORT</button></div>
-    <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(event)">
-    <button class="btn" onclick="copySummary()">📋 COPY WEEK REPORT (NOTION)</button>
-    <button class="btn warn" onclick="resetAll()">⨯ ERASE RUN</button>
-  </div>
-</div>
-</div>
-
-<nav>
-  <button data-s="today" class="on"><span class="ic">⌖</span>Today</button>
-  <button data-s="quests"><span class="ic">⚔</span>Quests</button>
-  <button data-s="raids"><span class="ic">👹</span>Raids</button>
-  <button data-s="shop"><span class="ic">◈</span>Shop</button>
-  <button data-s="player"><span class="ic">🜲</span>Player</button>
+<nav id="nav">
+  <button data-s="today" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Today</button>
+  <button data-s="quests"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>Quests</button>
+  <button data-s="miles"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h13l-2.5 4L18 12H5"/></svg>Milestones</button>
+  <button data-s="shop"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9.5 10c0-1.1 1.1-2 2.5-2s2.5.9 2.5 2-1.1 2-2.5 2-2.5.9-2.5 2 1.1 2 2.5 2 2.5-.9 2.5-2"/></svg>Rewards</button>
+  <button data-s="you"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>You</button>
 </nav>
 
 <script>
 "use strict";
-/* ═══════════════ SEED ═══════════════ */
-const AREAS={career:{n:"CAREER",stat:"INT",c:"var(--int)"},fitness:{n:"FITNESS",stat:"STR",c:"var(--str)"},waffle:{n:"WAFFLE OPS",stat:"GLD",c:"var(--gld)"},badminton:{n:"COURT",stat:"AGI",c:"var(--agi)"},money:{n:"MIND & GOLD",stat:"MND",c:"var(--mnd)"}};
+/* ════════ DATA ════════ */
+const AREAS={career:{n:"Career",stat:"Career"},fitness:{n:"Fitness",stat:"Fitness"},waffle:{n:"Waffle store",stat:"Business"},badminton:{n:"Badminton",stat:"Court"},money:{n:"Money & mind",stat:"Mind"}};
 const WEEKS=[
-{id:"W1",label:"W1 · JUL 28–AUG 2",start:"2026-07-28",end:"2026-08-02",winLine:60,days:6,startDow:1,tasks:[
+{id:"W1",n:1,label:"Jul 28 – Aug 2",start:"2026-07-28",end:"2026-08-02",winLine:60,days:6,tasks:[
  {id:"w1c1",area:"career",t:"Book your PMP exam date — put money down"},
- {id:"w1c2",area:"career",t:"5× morning deep-work blocks (6:30–8:00) on PMBOK"},
- {id:"w1f1",area:"fitness",t:"3 run/walk sessions — 1 min run / 1 min walk × 20"},
- {id:"w1f2",area:"fitness",t:"Movement streak — 20+ min every single day"},
+ {id:"w1c2",area:"career",t:"5 morning deep-work blocks, 6:30–8:00"},
+ {id:"w1f1",area:"fitness",t:"3 run/walk sessions — 1 min on, 1 min off × 20"},
+ {id:"w1f2",area:"fitness",t:"Move 20+ minutes every day this week"},
  {id:"w1w1",area:"waffle",t:"Numbers sheet — 30 days of sales, costs, footfall"},
- {id:"w1w2",area:"waffle",t:"Cost every menu item — find 3 highest-margin waffles"},
- {id:"w1b1",area:"badminton",t:"1 court session — book it Tuesday"},
- {id:"w1b2",area:"badminton",t:"2× 15-min footwork / shadow drills"},
- {id:"w1m1",area:"money",t:"Automate ₹40k transfer on salary day"},
- {id:"w1m2",area:"money",t:"Write the Why page — what the debt-free car means"}]},
-{id:"W2",label:"W2 · AUG 3–9",start:"2026-08-03",end:"2026-08-09",winLine:70,days:7,startDow:0,tasks:[
- {id:"w2c1",area:"career",t:"5× morning blocks — Process Groups + situational Qs"},
- {id:"w2c2",area:"career",t:"First 100 PMP practice questions — log score"},
- {id:"w2f1",area:"fitness",t:"3 runs — extend to 2 min run / 1 min walk"},
- {id:"w2f2",area:"fitness",t:"Streak day 14 — zero zero-days"},
- {id:"w2w1",area:"waffle",t:"Daily break-even ₹ — post it behind the counter"},
- {id:"w2w2",area:"waffle",t:"Push top-margin item to all — measure attach rate"},
- {id:"w2b1",area:"badminton",t:"1 court session — 3 competitive games"},
- {id:"w2b2",area:"badminton",t:"2× drills — serves + net shots"},
- {id:"w2m1",area:"money",t:"No-spend week — no delivery, no impulse buys"},
- {id:"w2m2",area:"money",t:"Sunday ritual — log XP, read next week"}]},
-{id:"W3",label:"W3 · AUG 10–16",start:"2026-08-10",end:"2026-08-16",winLine:70,days:7,startDow:0,tasks:[
- {id:"w3c1",area:"career",t:"5× morning blocks — 200 situational questions"},
- {id:"w3c2",area:"career",t:"Timed half-mock (2 hrs) — 60%+"},
- {id:"w3f1",area:"fitness",t:"3 runs — 5-min continuous intervals"},
+ {id:"w1w2",area:"waffle",t:"Cost every menu item, find the 3 best margins"},
+ {id:"w1b1",area:"badminton",t:"One court session — book it Tuesday"},
+ {id:"w1b2",area:"badminton",t:"Two 15-minute footwork drills at home"},
+ {id:"w1m1",area:"money",t:"Automate the ₹40k transfer on salary day"},
+ {id:"w1m2",area:"money",t:"Write the Why page — what the car means"}]},
+{id:"W2",n:2,label:"Aug 3 – 9",start:"2026-08-03",end:"2026-08-09",winLine:70,days:7,tasks:[
+ {id:"w2c1",area:"career",t:"5 morning blocks — process groups + situational questions"},
+ {id:"w2c2",area:"career",t:"First 100 practice questions, log the score"},
+ {id:"w2f1",area:"fitness",t:"3 runs — 2 minutes on, 1 minute off"},
+ {id:"w2f2",area:"fitness",t:"Streak reaches day 14 — no zero days"},
+ {id:"w2w1",area:"waffle",t:"Compute the daily break-even, post it at the counter"},
+ {id:"w2w2",area:"waffle",t:"Offer the top-margin item to everyone, track attach rate"},
+ {id:"w2b1",area:"badminton",t:"One session — three competitive games"},
+ {id:"w2b2",area:"badminton",t:"Two drills — serves and net shots"},
+ {id:"w2m1",area:"money",t:"No-spend week on non-essentials"},
+ {id:"w2m2",area:"money",t:"Sunday review — 15 minutes, plan the week"}]},
+{id:"W3",n:3,label:"Aug 10 – 16",start:"2026-08-10",end:"2026-08-16",winLine:70,days:7,tasks:[
+ {id:"w3c1",area:"career",t:"5 morning blocks — 200 situational questions"},
+ {id:"w3c2",area:"career",t:"Timed half-mock, 2 hours — score 60%+"},
+ {id:"w3f1",area:"fitness",t:"3 runs with 5-minute continuous intervals"},
  {id:"w3f2",area:"fitness",t:"Streak day 21 — the 20-day gate falls"},
- {id:"w3w1",area:"waffle",t:"Fix or cut 2 worst-margin items"},
- {id:"w3w2",area:"waffle",t:"Ask 15 customers: what brings you twice a week?"},
- {id:"w3b1",area:"badminton",t:"Court session vs a stronger player"},
- {id:"w3b2",area:"badminton",t:"2× drills — smash + ladders"},
+ {id:"w3w1",area:"waffle",t:"Fix or cut the 2 worst-margin items"},
+ {id:"w3w2",area:"waffle",t:"Ask 15 customers what would bring them twice a week"},
+ {id:"w3b1",area:"badminton",t:"Play someone better than you — lose usefully"},
+ {id:"w3b2",area:"badminton",t:"Two drills — smashes and ladders"},
  {id:"w3m1",area:"money",t:"Mid-month check — on pace for ₹40k?"},
- {id:"w3m2",area:"money",t:"1-hour phone-free walk"}]},
-{id:"W4",label:"W4 · AUG 17–23",start:"2026-08-17",end:"2026-08-23",winLine:70,days:7,startDow:0,tasks:[
- {id:"w4c1",area:"career",t:"Full 4-hr mock, exam conditions — 70%+"},
- {id:"w4c2",area:"career",t:"Weak-area repair — 100 Qs, worst domain only"},
- {id:"w4f1",area:"fitness",t:"First continuous 3K — no walking"},
- {id:"w4f2",area:"fitness",t:"Streak day 28 — a month unbroken"},
- {id:"w4w1",area:"waffle",t:"August P&L — above break-even?"},
- {id:"w4w2",area:"waffle",t:"Design September's offer from W3 answers"},
- {id:"w4b1",area:"badminton",t:"2 court sessions this week"},
- {id:"w4b2",area:"badminton",t:"Film 10 min of play — find 1 fix"},
- {id:"w4m1",area:"money",t:"Verify ₹40k landed — untouched"},
- {id:"w4m2",area:"money",t:"Month reflection — worked / broke / changes"}]}];
-const RAIDS=[
- {id:"bg1",area:"career",ico:"🐉",name:"PMP DRAGON",hp:300,note:"Falls only when you pass the real exam. Every study block chips its scales."},
- {id:"bg2",area:"fitness",ico:"🗿",name:"THE INERTIA GOLEM",hp:300,note:"5K non-stop under 35:00 + 20-day streak. Every run cracks it."},
- {id:"bg3",area:"waffle",ico:"🐗",name:"BREAK-EVEN BOAR",hp:300,note:"August closes profitable, P&L as proof. Every number you learn wounds it."},
- {id:"bg4",area:"badminton",ico:"🦅",name:"COURT PHANTOM",hp:300,note:"6 court sessions in August. Show up and it bleeds."},
- {id:"bg5",area:"money",ico:"🐍",name:"DEBT SERPENT",hp:300,note:"₹40,000 banked → unlocks the L1 Apple Watch, paid in cash."}];
+ {id:"w3m2",area:"money",t:"One hour phone-free walk"}]},
+{id:"W4",n:4,label:"Aug 17 – 23",start:"2026-08-17",end:"2026-08-23",winLine:70,days:7,tasks:[
+ {id:"w4c1",area:"career",t:"Full 4-hour mock under exam conditions — 70%+"},
+ {id:"w4c2",area:"career",t:"100 questions on your single worst domain"},
+ {id:"w4f1",area:"fitness",t:"First continuous 3K, no walking"},
+ {id:"w4f2",area:"fitness",t:"Streak day 28 — one month unbroken"},
+ {id:"w4w1",area:"waffle",t:"August P&L so far — above break-even?"},
+ {id:"w4w2",area:"waffle",t:"Design September's offer from week-3 answers"},
+ {id:"w4b1",area:"badminton",t:"Two court sessions this week"},
+ {id:"w4b2",area:"badminton",t:"Film 10 minutes of play, find one fix"},
+ {id:"w4m1",area:"money",t:"Confirm ₹40k landed, untouched"},
+ {id:"w4m2",area:"money",t:"Month reflection — worked, broke, changes"}]}];
+const MILES=[
+ {id:"bg1",area:"career",n:"Pass the PMP exam",d:"The L1 career gate. Study blocks and quests fill this bar; only the real exam completes it.",goal:300},
+ {id:"bg2",area:"fitness",n:"5K under 35:00 + 20-day streak",d:"The L1 fitness gate. Every run and every active day counts.",goal:300},
+ {id:"bg3",area:"waffle",n:"August closes profitable",d:"Even ₹1 over break-even, with the P&L to prove it. Month 1 of 2.",goal:300},
+ {id:"bg4",area:"badminton",n:"Six court sessions in August",d:"Consistency beats intensity. Also feeds the L2 gate.",goal:300},
+ {id:"bg5",area:"money",n:"₹40,000 saved this month",d:"₹30k buys the watch in cash, ₹10k stays banked.",goal:300}];
 const SHOP=[
- {id:"t1",ico:"🍔",n:"Cheat Meal License",d:"Saturday, anything, zero guilt · ~₹500",g:30,type:"treat"},
- {id:"t2",ico:"🎬",n:"Movie / Match Night",d:"~₹300",g:25,type:"treat"},
- {id:"t3",ico:"😴",n:"Lazy Sunday Pass",d:"No alarm, no plan · free",g:15,type:"treat"},
- {id:"t4",ico:"☕",n:"Fancy Coffee Writ",d:"The one you always skip · ~₹250",g:10,type:"treat"},
- {id:"sk",ico:"🃏",n:"Extra Skip Token",d:"One more excuse this week (max 1)",g:40,type:"token"},
- {id:"m8",ico:"👟",n:"AUG CACHE — Running Gear",d:"₹2,500 · needs 3+ bosses down + 3 weeks cleared",g:120,type:"cache"},
- {id:"m9",ico:"🏸",n:"SEP CACHE — Racket Upgrade",d:"₹3,000 · unlocks in September",g:150,type:"cache",locked:true},
- {id:"m10",ico:"🚌",n:"OCT CACHE — Day Trip",d:"₹2,000 · unlocks in October",g:130,type:"cache",locked:true}];
+ {id:"t1",n:"Cheat meal license",d:"Saturday, anything, zero guilt · ~₹500",p:35,type:"treat"},
+ {id:"t2",n:"Movie or match night",d:"~₹300",p:28,type:"treat"},
+ {id:"t3",n:"Lazy Sunday pass",d:"No alarm, no plan · free",p:18,type:"treat"},
+ {id:"t4",n:"The fancy coffee",d:"The one you always skip · ~₹250",p:12,type:"treat"},
+ {id:"sk",n:"Extra skip token",d:"One more excused quest this week",p:45,type:"token"},
+ {id:"m8",n:"August cache — running gear",d:"₹2,500 · 3+ milestones and 3 weeks cleared",p:140,type:"cache"},
+ {id:"m9",n:"September cache — racket upgrade",d:"₹3,000 · unlocks in September",p:160,type:"cache"},
+ {id:"m10",n:"October cache — day trip",d:"₹2,000 · unlocks in October",p:140,type:"cache"}];
 const LADDER=[
- {id:"l1",ico:"⌚",n:"L1 — Apple Watch SE · ₹30,000",d:"PMP + 5K sub-35 + streak + cash",w:"AUG 31 '26"},
- {id:"l2",ico:"📺",n:"L2 — 65\" Mini-LED TV · ₹60,000",d:"SQL + Power BI + 10K volume + 10 sessions",w:"OCT 31 '26"},
- {id:"l3",ico:"📷",n:"L3 — Mirrorless Camera · ₹65,000",d:"PSPO + 3 case studies + 10K run",w:"DEC 31 '26"},
- {id:"lj",ico:"⚡",n:"JOB SWITCH — ₹1.8–2.2L net/mo",d:"30 mocks + 2 offers + 15K run → ₹85k/mo saved",w:"JAN '27"},
- {id:"l4",ico:"📱",n:"L4 — iPhone 18 Pro · ₹1,35,000",d:"Enterprise AI + half-marathon 21.1K",w:"MAR '27"},
- {id:"ls",ico:"🧇",n:"STORE #2 — lease signed",d:"Waffle GTM 4 phases · funded by store profits",w:"MID '27"},
- {id:"l51",ico:"🚗",n:"L5.1 — Car fund ₹6,00,000",d:"Financial modeling + 25K run",w:"OCT '27"},
- {id:"l52",ico:"🚗",n:"L5.2 — Car fund ₹12,00,000",d:"Enterprise architecture + 30K run",w:"MAY '28"},
- {id:"l53",ico:"👑",n:"L5.3 — ₹18L CAR · PURE CASH",d:"Full portfolio + 42.2K marathon. Wire it. Drive home.",w:"OCT '28"}];
+ {id:"l1",t:"Apple Watch SE · ₹30,000",s:"PMP + 5K + streak + cash",w:"Aug 2026"},
+ {id:"l2",t:"65\" TV · ₹60,000",s:"SQL + Power BI + 10K volume + 10 sessions",w:"Oct 2026"},
+ {id:"l3",t:"Camera setup · ₹65,000",s:"PSPO + 3 case studies + 10K run",w:"Dec 2026"},
+ {id:"lj",t:"Job switch · ₹1.8–2.2L net",s:"30 mocks + 2 offers + 15K run",w:"Jan 2027"},
+ {id:"l4",t:"iPhone 18 Pro · ₹1,35,000",s:"Enterprise AI + half marathon",w:"Mar 2027"},
+ {id:"ls",t:"Waffle store #2",s:"4 GTM phases, funded by store profits",w:"Mid 2027"},
+ {id:"l51",t:"Car fund ₹6,00,000",s:"Financial modeling + 25K run",w:"Oct 2027"},
+ {id:"l52",t:"Car fund ₹12,00,000",s:"Architecture + 30K run",w:"May 2028"},
+ {id:"l53",t:"₹18L car, pure cash",s:"Portfolio + full marathon · wire it, drive home",w:"Oct 2028"}];
 const HABITS=[
- {id:"h1",ico:"🌅",t:"Morning deep-work block 6:30–8:00",days:[1,2,3,4,5],stat:"INT",dmg:"bg1"},
- {id:"h2",ico:"🏃",t:"20+ min movement (run / court / walk)",days:[0,1,2,3,4,5,6],stat:"STR",dmg:"bg2"},
- {id:"h3",ico:"🍳",t:"Breakfast on-plan (see Fuel below)",days:[0,1,2,3,4,5,6],stat:"VIT"},
- {id:"h4",ico:"🥗",t:"Lunch on-plan — fiber first, fermented daily",days:[0,1,2,3,4,5,6],stat:"VIT"},
- {id:"h5",ico:"💧",t:"3.5–4L water",days:[0,1,2,3,4,5,6],stat:"VIT"},
- {id:"h6",ico:"🚶",t:"10-min walk after the heavy dinner",days:[0,1,2,3,4,5,6],stat:"VIT",dmg:"bg5"}];
-const BREAKFASTS=["Veg poha + bowl of curd","3-egg bhurji + multigrain toast","Oats upma + chaas","2 moong dal chillas + curd","Hung curd bowl + fruit + seeds","2 besan chillas / masala oats","3 idlis + sambar"];
-const LUNCHES=["Sprouts salad + 2 phulkas + sabzi","Rajma/chole small + big salad + curd","Paneer bhurji + 2 phulkas + kachumber","Soya pulao small + raita","Dal + small jeera rice + salad","Curd rice + sautéed veggies","2-egg curry + roti + salad"];
-const TITLES=[[1,"Wanderer of the Crossroads"],[3,"Apprentice of the System"],[5,"Licensed Operator"],[8,"The Machine"],[12,"Boss Slayer"],[16,"Empire Builder"],[20,"Debt-Free Sovereign"]];
+ {id:"h1",t:"Morning deep-work block",s:"6:30–8:00 · weekdays",days:[1,2,3,4,5],stat:"Career",mile:"bg1",amt:5},
+ {id:"h2",t:"Move 20+ minutes",s:"run, court or walk",days:[0,1,2,3,4,5,6],stat:"Fitness",mile:"bg2",amt:5},
+ {id:"h3",t:"Breakfast on plan",s:"see fuel below",days:[0,1,2,3,4,5,6],stat:"Health"},
+ {id:"h4",t:"Lunch on plan",s:"fiber first, one fermented thing",days:[0,1,2,3,4,5,6],stat:"Health"},
+ {id:"h5",t:"3.5–4L water",s:"",days:[0,1,2,3,4,5,6],stat:"Health"},
+ {id:"h6",t:"Walk after dinner",s:"10 minutes, protects the math",days:[0,1,2,3,4,5,6],stat:"Health",mile:"bg5",amt:3}];
+const BREAKFASTS=["Veg poha with a bowl of curd","3-egg bhurji, multigrain toast","Oats upma with chaas","2 moong dal chillas with curd","Hung curd bowl, fruit and seeds","2 besan chillas or masala oats","3 idlis with sambar"];
+const LUNCHES=["Sprouts salad, 2 phulkas, sabzi","Small rajma or chole, big salad, curd","Paneer bhurji, 2 phulkas, kachumber","Small soya pulao with raita","Dal, small jeera rice, salad","Curd rice with sautéed vegetables","2-egg curry, roti, salad"];
+const TITLES=[[1,"At the starting line"],[3,"Getting consistent"],[5,"Operator"],[8,"Compounding"],[12,"Momentum"],[16,"Builder"],[20,"Sovereign"]];
 const ACH=[
- {id:"a1",e:"🩸",n:"First Blood",c:"First quest cleared",g:10},
- {id:"a2",e:"☀️",n:"Perfect Day",c:"All directives in one day",g:15},
- {id:"a3",e:"🏁",n:"Week Cleared",c:"Win any week",g:20},
- {id:"a4",e:"🔥",n:"Chain ×7",c:"7-day directive streak",g:20},
- {id:"a5",e:"⚔️",n:"Boss Down",c:"Defeat first raid boss",g:25},
- {id:"a6",e:"🌊",n:"Full Clear",c:"All 5 August bosses",g:50},
- {id:"a7",e:"🦠",n:"Gut Lord",c:"Perfect gut week",g:20},
- {id:"a8",e:"✨",n:"Level 5",c:"Reach LV.5",g:25},
- {id:"a9",e:"🌑",n:"Level 10",c:"Reach LV.10",g:50},
- {id:"a10",e:"💸",n:"Big Spender",c:"Spend 100 G total",g:15},
- {id:"a11",e:"🧊",n:"Iron Will",c:"Clear the no-spend week quest",g:20},
- {id:"a12",e:"🏆",n:"Season Sweep",c:"Win all 4 weeks",g:60}];
+ {id:"a1",e:"✓",n:"First quest",c:"Clear your first quest",p:10},
+ {id:"a2",e:"☀️",n:"Perfect day",c:"Every directive in one day",p:15},
+ {id:"a3",e:"◎",n:"Ring closed",c:"Win any week",p:20},
+ {id:"a4",e:"🔥",n:"Chain of 7",c:"7-day directive chain",p:20},
+ {id:"a5",e:"▲",n:"First milestone",c:"Complete a milestone",p:25},
+ {id:"a6",e:"★",n:"August sweep",c:"All 5 August milestones",p:50},
+ {id:"a7",e:"🥗",n:"Clean week",c:"Both meals on plan, 5+ days in a week",p:20},
+ {id:"a8",e:"5",n:"Level 5",c:"Reach level 5",p:25},
+ {id:"a9",e:"10",n:"Level 10",c:"Reach level 10",p:50},
+ {id:"a10",e:"◈",n:"Spender",c:"Spend 100 points",p:15},
+ {id:"a11",e:"🧊",n:"Iron will",c:"Clear the no-spend week",p:20},
+ {id:"a12",e:"👑",n:"Season sweep",c:"Win all four weeks",p:60}];
 
-/* ═══════════════ STATE ═══════════════ */
-const KEY="lifegtm_v3";
+/* ════════ STATE ════════ */
+const KEY="lifegtm_v4";
 let S=load();
-function fresh(){return {tasks:{},skips:{},extraSkip:{},raidDead:{},gut:{},shields:{},habits:{},spent:0,purch:{},ach:{},lvlSeen:1,sound:true};}
+function fresh(){return {tasks:{},skips:{},extraSkip:{},miles:{},habits:{},spent:0,purch:{},ach:{},shields:{},log:[],lvlSeen:1,sound:true,intro:false};}
 function load(){
   try{
-    const v3=localStorage.getItem(KEY); if(v3) return Object.assign(fresh(),JSON.parse(v3));
-    const v2=localStorage.getItem("lifegtm_v2");
-    if(v2){const o=JSON.parse(v2),n=fresh(); n.tasks=o.tasks||{}; n.skips=o.skips||{}; n.gut=o.gut||{}; n.shields=o.shields||{};
-      if(o.bosses) for(const k in o.bosses) if(o.bosses[k]) n.raidDead[k]=true;
-      return n;}
+    const v4=localStorage.getItem(KEY); if(v4)return Object.assign(fresh(),JSON.parse(v4));
+    const v3=localStorage.getItem("lifegtm_v3");
+    if(v3){const o=JSON.parse(v3),n=fresh();
+      n.tasks=o.tasks||{};n.skips=o.skips||{};n.extraSkip=o.extraSkip||{};n.habits=o.habits||{};
+      n.spent=o.spent||0;n.purch=o.purch||{};n.ach=o.ach||{};n.shields=o.shields||{};
+      n.miles=o.raidDead||{};n.sound=o.sound!==false;return n;}
   }catch(e){}
   return fresh();
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 
-/* ═══════════════ ENGINE ═══════════════ */
+/* ════════ ENGINE ════════ */
 const wk=id=>WEEKS.find(w=>w.id===id);
-const iso=d=>d.toISOString().slice(0,10);
-function todayISO(){const d=new Date();return iso(new Date(d.getTime()-d.getTimezoneOffset()*60000));}
-let curW=pickWeek(), selDate=todayISO();
-function pickWeek(){const t=todayISO(); for(const w of WEEKS){if(t<=w.end)return w.id;} return "W4";}
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const todayISO=()=>iso(new Date());
+let curW=pickWeek();
+function pickWeek(){const t=todayISO();for(const w of WEEKS)if(t<=w.end)return w.id;return "W4";}
+function*weekDates(w){const d=new Date(w.start+"T12:00:00");for(let i=0;i<w.days;i++){yield iso(d);d.setDate(d.getDate()+1);}}
+function gutPts(wid){let n=0;for(const d of weekDates(wk(wid)))if(S.habits[d]&&S.habits[d].h3&&S.habits[d].h4)n++;return n;}
 function gutNeed(w){return w.days>=7?5:4;}
-function gutPts(wid){return (S.gut[wid]||[]).filter(v=>v===2).length;}
 function gutBonus(wid){return gutPts(wid)>=gutNeed(wk(wid))?10:0;}
 function questXP(wid){return wk(wid).tasks.reduce((a,t)=>a+(S.tasks[t.id]?10:0),0);}
 function weekXP(wid){return questXP(wid)+gutBonus(wid);}
-function weekPossible(wid){const skips=wk(wid).tasks.filter(t=>S.skips[t.id]).length;return 100-skips*10+10;}
+function weekPossible(wid){return 100-wk(wid).tasks.filter(t=>S.skips[t.id]).length*10+10;}
 function weekWon(wid){return weekXP(wid)>=wk(wid).winLine;}
 function weekOver(wid){return todayISO()>wk(wid).end;}
-function habitXPAll(){let x=0;for(const d in S.habits)x+=Object.keys(S.habits[d]).filter(k=>S.habits[d][k]).length*2;return x;}
-function raidXP(){return Object.keys(S.raidDead).filter(k=>S.raidDead[k]).length*50;}
-function achGold(){return ACH.reduce((a,x)=>a+(S.ach[x.id]?x.g:0),0);}
-function totalXP(){return WEEKS.reduce((a,w)=>a+weekXP(w.id),0)+habitXPAll()+raidXP();}
-function questGoldAll(){let g=0;for(const w of WEEKS)g+=w.tasks.filter(t=>S.tasks[t.id]).length*5;return g;}
-function habitGoldAll(){let g=0;for(const d in S.habits)g+=Object.keys(S.habits[d]).filter(k=>S.habits[d][k]).length;return g;}
-function gutGoldAll(){return WEEKS.reduce((a,w)=>a+(gutBonus(w.id)?10:0),0);}
-function goldEarned(){return questGoldAll()+habitGoldAll()+raidXP()+achGold()+gutGoldAll();}
-function gold(){return goldEarned()-S.spent;}
+function habitXPAll(){let x=0;for(const d in S.habits)x+=Object.values(S.habits[d]).filter(Boolean).length*2;return x;}
+function mileXP(){return Object.values(S.miles).filter(Boolean).length*50;}
+function totalXP(){return WEEKS.reduce((a,w)=>a+weekXP(w.id),0)+habitXPAll()+mileXP();}
+function achPts(){return ACH.reduce((a,x)=>a+(S.ach[x.id]?x.p:0),0);}
+function ptsEarned(){
+  let p=0;
+  for(const w of WEEKS){p+=w.tasks.filter(t=>S.tasks[t.id]).length*5; if(gutBonus(w.id))p+=10; if(weekWon(w.id))p+=15;}
+  for(const d in S.habits)p+=Object.values(S.habits[d]).filter(Boolean).length;
+  p+=Object.values(S.miles).filter(Boolean).length*50+achPts();
+  return p;
+}
+function pts(){return ptsEarned()-S.spent;}
 function lvlOf(xp){let l=1,need=100,acc=0;while(xp>=acc+need){acc+=need;l++;need=100+(l-1)*30;}return {l,into:xp-acc,need};}
-function titleOf(l){let t=TITLES[0][1];for(const[min,n]of TITLES)if(l>=min)t=n;return t;}
+function titleOf(l){let t=TITLES[0][1];for(const[m,n]of TITLES)if(l>=m)t=n;return t;}
 function statVal(st){
   let v=0;
   for(const w of WEEKS)for(const t of w.tasks)if(S.tasks[t.id]&&AREAS[t.area].stat===st)v+=2;
   for(const d in S.habits)for(const h of HABITS)if(S.habits[d][h.id]&&h.stat===st)v+=1;
-  if(st==="VIT")v+=WEEKS.reduce((a,w)=>a+gutPts(w.id),0);
   return v;
 }
-function dmgTo(bid){
-  let d=0;
-  for(const w of WEEKS)for(const t of w.tasks)if(S.tasks[t.id]&&RAIDS.find(r=>r.id===bid).area===t.area)d+=30;
-  for(const day in S.habits)for(const h of HABITS)if(S.habits[day][h.id]&&h.dmg===bid)d+=5;
-  if(bid==="bg3")for(const w of WEEKS)d+=gutPts(w.id)*0; // gut doesn't hurt the boar
-  if(bid==="bg4")for(const w of WEEKS)for(const t of w.tasks)if(S.tasks[t.id]&&t.area==="badminton")d+=0; // already counted
-  return d;
+function mileProg(m){
+  if(S.miles[m.id])return m.goal;
+  let p=0;
+  for(const w of WEEKS)for(const t of w.tasks)if(S.tasks[t.id]&&t.area===m.area)p+=30;
+  for(const d in S.habits)for(const h of HABITS)if(S.habits[d][h.id]&&h.mile===m.id)p+=h.amt;
+  return Math.min(p,m.goal-10);
 }
-function raidHP(r){return S.raidDead[r.id]?0:Math.max(r.hp-dmgTo(r.id),0);}
-function dayStreak(){
+function dayChain(){
   let s=0,d=new Date();
-  for(let i=0;i<400;i++){
-    const k=iso(new Date(d.getTime()-d.getTimezoneOffset()*60000));
+  for(let i=0;i<500;i++){
+    const k=iso(d);
     const done=S.habits[k]?Object.values(S.habits[k]).filter(Boolean).length:0;
-    if(done>=3)s++; else if(i===0){/* today may be incomplete */} else break;
+    if(done>=3)s++;else if(i===0){}else break;
     d.setDate(d.getDate()-1);
   }
   return s;
 }
-
-/* ═══════════════ ACHIEVEMENTS ═══════════════ */
 function checkAch(){
-  const unlocked=[];
-  const has=id=>S.ach[id];
-  const anyTask=Object.values(S.tasks).some(Boolean);
-  if(!has("a1")&&anyTask)unlocked.push("a1");
+  const un=[];const has=id=>S.ach[id];
+  if(!has("a1")&&Object.values(S.tasks).some(Boolean))un.push("a1");
   const t=todayISO(),hd=S.habits[t]||{},dow=new Date().getDay();
-  const due=HABITS.filter(h=>h.days.includes(dow)).length;
-  if(!has("a2")&&due>0&&HABITS.filter(h=>h.days.includes(dow)&&hd[h.id]).length===due)unlocked.push("a2");
-  if(!has("a3")&&WEEKS.some(w=>weekWon(w.id)))unlocked.push("a3");
-  if(!has("a4")&&dayStreak()>=7)unlocked.push("a4");
-  const deads=Object.values(S.raidDead).filter(Boolean).length;
-  if(!has("a5")&&deads>=1)unlocked.push("a5");
-  if(!has("a6")&&deads>=5)unlocked.push("a6");
-  if(!has("a7")&&WEEKS.some(w=>gutPts(w.id)>=w.days))unlocked.push("a7");
+  const due=HABITS.filter(h=>h.days.includes(dow));
+  if(!has("a2")&&due.length&&due.every(h=>hd[h.id]))un.push("a2");
+  if(!has("a3")&&WEEKS.some(w=>weekWon(w.id)))un.push("a3");
+  if(!has("a4")&&dayChain()>=7)un.push("a4");
+  const md=Object.values(S.miles).filter(Boolean).length;
+  if(!has("a5")&&md>=1)un.push("a5");
+  if(!has("a6")&&md>=5)un.push("a6");
+  if(!has("a7")&&WEEKS.some(w=>gutPts(w.id)>=gutNeed(w)))un.push("a7");
   const L=lvlOf(totalXP()).l;
-  if(!has("a8")&&L>=5)unlocked.push("a8");
-  if(!has("a9")&&L>=10)unlocked.push("a9");
-  if(!has("a10")&&S.spent>=100)unlocked.push("a10");
-  if(!has("a11")&&S.tasks["w2m1"])unlocked.push("a11");
-  if(!has("a12")&&WEEKS.every(w=>weekWon(w.id)))unlocked.push("a12");
-  unlocked.forEach(id=>{S.ach[id]=true;const a=ACH.find(x=>x.id===id);toast(`🏅 ACHIEVEMENT — ${a.n} · +${a.g} G`);sfx("ach");});
-  if(unlocked.length)save();
+  if(!has("a8")&&L>=5)un.push("a8");
+  if(!has("a9")&&L>=10)un.push("a9");
+  if(!has("a10")&&S.spent>=100)un.push("a10");
+  if(!has("a11")&&S.tasks["w2m1"])un.push("a11");
+  if(!has("a12")&&WEEKS.every(w=>weekWon(w.id)))un.push("a12");
+  un.forEach(id=>{S.ach[id]=true;const a=ACH.find(x=>x.id===id);toast(`Achievement — ${a.n} · +${a.p} pts`);sfx("ach");});
+  if(un.length){save();syncHeader();}
 }
 
-/* ═══════════════ RENDER ═══════════════ */
-function render(){
-  checkLevel(); renderHeader(); renderToday(); renderQuests(); renderRaids(); renderShop(); renderPlayer(); checkAch();
-}
-function renderHeader(){
+/* ════════ SYNC (surgical updates — no full rebuilds on tap) ════════ */
+function syncHeader(){
   const xp=totalXP(),{l,into,need}=lvlOf(xp);
-  document.getElementById("plvl").textContent=l;
-  document.getElementById("ptitle").textContent="« "+titleOf(l)+" »";
-  document.getElementById("pgold").textContent="◈ "+gold()+" G";
-  document.getElementById("xpfill").style.width=(into/need*100)+"%";
-  document.getElementById("xpcur").textContent=xp+" XP TOTAL";
-  document.getElementById("xpnext").textContent=into+" / "+need+" → LV."+(l+1);
-}
-function checkLevel(){
-  const l=lvlOf(totalXP()).l;
+  el("hlvl").textContent=l; el("hpts").textContent=pts();
+  el("balance").innerHTML=pts()+"<small>points</small>";
   if(l>(S.lvlSeen||1)){
     S.lvlSeen=l;save();
-    document.getElementById("lvnum").textContent="LV."+l;
-    document.getElementById("lvtitle").textContent="« "+titleOf(l)+" »";
-    document.getElementById("lvlup").classList.add("on");
-    burst(220);sfx("lvl");
-  } else if(l<(S.lvlSeen||1)){S.lvlSeen=l;save();}
+    el("lvnum").textContent=l; el("lvtitle").textContent=titleOf(l);
+    el("lvlup").classList.add("on"); burst(90); sfx("lvl");
+  }else if(l<(S.lvlSeen||1)){S.lvlSeen=l;save();}
+  el("youtitle").textContent="Level "+l+" · "+titleOf(l)+" · "+xp+" XP";
+}
+let ringAnim=null,ringShown=0;
+function syncRing(){
+  const w=wk(curW),xp=weekXP(curW),target=Math.min(xp/w.winLine,1);
+  el("ringxp").textContent=xp;
+  el("ringlbl").textContent="of "+w.winLine;
+  el("ringtitle").textContent="Week "+w.n+(curW===pickWeek()?" · now":"");
+  el("ringdesc").textContent=w.label+" · "+(xp>=w.winLine?"cleared with "+xp+" XP":(w.winLine-xp)+" XP to the win line")+" · max "+weekPossible(curW);
+  el("wonpill").classList.toggle("on",weekWon(curW));
+  cancelAnimationFrame(ringAnim);
+  const from=ringShown,to=target,t0=performance.now(),dur=RM?0:500;
+  (function step(t){
+    const k=dur?Math.min((t-t0)/dur,1):1,e=1-Math.pow(1-k,3);
+    ringShown=from+(to-from)*e; drawRing(ringShown);
+    if(k<1)ringAnim=requestAnimationFrame(step);
+  })(t0);
+}
+function drawRing(p){
+  const cv=el("ring"),dpr=devicePixelRatio||1,s=cv.clientWidth||132;
+  if(cv.width!==s*dpr){cv.width=s*dpr;cv.height=s*dpr;}
+  const c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,s,s);
+  const r=s/2-9,cx=s/2,cy=s/2,tk=css("--track");
+  c.lineWidth=11;c.lineCap="round";
+  c.strokeStyle=tk;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();
+  if(p>0.004){
+    const g=c.createLinearGradient(0,0,s,s);g.addColorStop(0,css("--blue"));g.addColorStop(1,css("--green"));
+    c.strokeStyle=p>=1?css("--green"):g;
+    c.beginPath();c.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+p*Math.PI*2);c.stroke();
+  }
+}
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function syncChain(){el("chainlbl").textContent=dayChain()+" day chain";}
+function syncMiles(){
+  MILES.forEach(m=>{
+    const bar=el("mb_"+m.id),pc=el("mp_"+m.id),btn=el("mx_"+m.id),box=el("mrow_"+m.id);
+    if(!bar)return;
+    const p=mileProg(m),done=!!S.miles[m.id];
+    bar.style.width=(p/m.goal*100)+"%";
+    pc.textContent=done?"Done":Math.round(p/m.goal*100)+"%";
+    box.classList.toggle("done",done);
+    btn.textContent=done?"Completed ✓":"Mark complete";
+    btn.classList.toggle("rdy",!done&&p>=m.goal*0.8);
+  });
+}
+
+/* ════════ RENDER (full — on load / tab / week change only) ════════ */
+const el=id=>document.getElementById(id);
+function render(){
+  renderToday();renderQuests();renderMiles();renderShop();renderYou();
+  syncHeader();syncRing();syncChain();syncMiles();checkAch();
 }
 function renderToday(){
-  const t=todayISO(),d=new Date(),dow=d.getDay();
-  document.getElementById("todaydate").textContent=d.toDateString().toUpperCase().slice(0,10);
-  const hl=document.getElementById("habitlist");hl.innerHTML="";
+  const d=new Date(),dow=d.getDay(),t=todayISO();
+  const hr=d.getHours();
+  el("greet").textContent=hr<12?"Good morning":hr<17?"Good afternoon":"Good evening";
+  el("datesub").textContent=d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})+(t<"2026-07-28"?" · Season 1 starts Jul 28 — warm-up counts":"");
   if(!S.habits[t])S.habits[t]={};
-  const preSeason=t<"2026-07-28";
+  const hl=el("habitlist");hl.innerHTML="";
   HABITS.forEach(h=>{
     const due=h.days.includes(dow),on=!!S.habits[t][h.id];
-    const q=document.createElement("div");
-    q.className="q"+(on?" done":"")+(!due?" locked":"");
-    q.style.setProperty("--acc",on?"var(--gr)":"var(--edge2)");
-    q.innerHTML=`<div class="box">✓</div><div class="body"><div class="t">${h.ico} ${h.t}</div>
-      <div class="meta">${due?("+1 "+h.stat+(h.dmg?" · DMG "+RAIDS.find(r=>r.id===h.dmg).name:"")):"REST DAY"}</div></div>
-      <div class="rew"><span class="x">+2 XP</span><br><span class="g">+1 G</span></div>`;
-    q.querySelector(".box").onclick=()=>{
-      S.habits[t][h.id]=!on;save();
-      if(!on){orbFrom(q);sfx("chk");if(h.dmg)dmgFloat(h.dmg,5);}
-      render();
+    const r=document.createElement("div");
+    r.className="row"+(on?" done":"")+(!due?" rest":"");
+    r.innerHTML=`<button class="ck" aria-label="toggle"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 7"/></svg></button>
+      <div class="m"><div class="t">${h.t}</div>${h.s||!due?`<div class="s">${due?h.s:"weekends off"}</div>`:""}</div>
+      <div class="v">+2</div>`;
+    const tap=()=>{
+      const now=!S.habits[t][h.id];S.habits[t][h.id]=now;save();
+      r.classList.toggle("done",now);
+      if(now){sfx("chk");buzz(8);if(h.mile)toastMini("+5 → "+MILES.find(m=>m.id===h.mile).n);}
+      syncHeader();syncRing();syncChain();syncMiles();checkAch();
     };
-    hl.appendChild(q);
+    r.querySelector(".ck").onclick=tap; r.querySelector(".m").onclick=tap;
+    hl.appendChild(r);
   });
-  const ds=dayStreak();
-  document.getElementById("dstreaknote").innerHTML=preSeason
-    ?`⏳ Season 1 begins <b style="color:var(--cy)">JUL 28</b> — directives are live now for warm-up. Chain: <b style="color:var(--gd)">${ds}🔥</b>`
-    :`Daily chain: <b style="color:var(--gd)">${ds}🔥</b> — 3+ directives keeps the chain alive.`;
   const idx=(dow+6)%7;
-  document.getElementById("todayfuel").innerHTML=
-    `🍳 <b>Breakfast:</b> ${BREAKFASTS[idx]}<br>🥗 <b>Lunch:</b> ${LUNCHES[idx]}<br>🌙 <b>Dinner:</b> the heavy one — earned. Then the walk.`;
-  renderWeekMeter();
-}
-function renderWeekMeter(){
-  const w=wk(curW),xp=weekXP(curW),poss=weekPossible(curW);
-  document.getElementById("wklabel2").textContent=w.label;
-  document.getElementById("wxp2").innerHTML=xp+`<b>/${poss}</b>`;
-  document.getElementById("wverdict").textContent=weekWon(curW)?"CLEARED":xp>=50?"SURVIVING":"IN PROGRESS";
-  document.getElementById("wfill2").style.width=Math.min(xp/poss*100,100)+"%";
-  document.getElementById("m50").style.left=(50/poss*100)+"%";
-  document.getElementById("mwin").style.left=(w.winLine/poss*100)+"%";
-  document.getElementById("mwintxt").textContent="WIN "+w.winLine;
-  document.getElementById("wonflag").classList.toggle("on",weekWon(curW));
+  el("fuel").innerHTML=`<b>Breakfast</b> — ${BREAKFASTS[idx]}<br><b>Lunch</b> — ${LUNCHES[idx]}<br><b>Dinner</b> — the heavy one, earned. Then the walk.`;
 }
 function renderQuests(){
-  const wp=document.getElementById("wpick");wp.innerHTML="";
+  const seg=el("seg");seg.innerHTML="";
   WEEKS.forEach(w=>{
     const b=document.createElement("button");
-    b.textContent=(weekWon(w.id)?"✔ ":"")+w.id;
+    b.innerHTML=`W${w.n}<span class="w">${weekWon(w.id)?"✓":""}</span>`;
     if(w.id===curW)b.classList.add("on");
-    if(weekWon(w.id))b.classList.add("wn");
-    b.onclick=()=>{curW=w.id;render();};
-    wp.appendChild(b);
+    b.onclick=()=>{curW=w.id;renderQuests();syncRing();sfx("tap");};
+    seg.appendChild(b);
   });
-  const el=document.getElementById("questlist");el.innerHTML="";
+  const area=el("questarea");area.innerHTML="";
   const w=wk(curW);
-  const baseSkips=w.tasks.filter(t=>S.skips[t.id]).length;
-  const maxSkips=1+(S.extraSkip[curW]?1:0);
+  const usedSkips=()=>w.tasks.filter(t=>S.skips[t.id]).length;
+  const maxSkips=()=>1+(S.extraSkip[curW]?1:0);
   for(const aid of Object.keys(AREAS)){
-    const a=AREAS[aid],ts=w.tasks.filter(t=>t.area===aid);
-    const h=document.createElement("h3");h.className="sec";
-    h.innerHTML=`◢ ${a.n} — <b>${ts.filter(t=>S.tasks[t.id]).length}/${ts.length}</b>`;
-    el.appendChild(h);
+    const ts=w.tasks.filter(t=>t.area===aid);
+    const card=document.createElement("div");card.className="card";
+    card.innerHTML=`<div class="cardtitle">${AREAS[aid].n} <span class="r" id="qc_${aid}">${ts.filter(t=>S.tasks[t.id]).length} of ${ts.length}</span></div>`;
     ts.forEach(t=>{
       const on=!!S.tasks[t.id],sk=!!S.skips[t.id];
-      const q=document.createElement("div");
-      q.className="q"+(on?" done":"")+(sk?" skipped":"");
-      q.style.setProperty("--acc",a.c);
-      q.innerHTML=`<div class="box">✓</div><div class="body"><div class="t">${t.t}</div>
-        <div class="meta">+2 ${a.stat} · DMG 30 → ${RAIDS.find(r=>r.area===t.area).name}</div></div>
-        <div class="rew"><span class="x">+10 XP</span><br><span class="g">+5 G</span></div>
-        ${!on?`<button class="skp">${sk?"UNSKIP":"SKIP"}</button>`:""}`;
-      q.querySelector(".box").onclick=()=>{
-        const wasWon=weekWon(curW);
-        if(on){delete S.tasks[t.id];}
-        else{S.tasks[t.id]=true;delete S.skips[t.id];orbFrom(q);sfx("chk");dmgFloat(RAIDS.find(r=>r.area===t.area).id,30);}
-        save();render();
-        if(!wasWon&&weekWon(curW)){burst(180);sfx("win");toast("■ WEEK CLEARED — the shop is open. Claim a treat.");}
+      const r=document.createElement("div");
+      r.className="row"+(on?" done":"")+(sk?" skipped":"");
+      r.innerHTML=`<button class="ck"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 7"/></svg></button>
+        <div class="m"><div class="t">${t.t}</div><div class="s">+10 XP · +5 pts</div></div>
+        <button class="skipbtn">${sk?"Skipped":"Skip"}</button>`;
+      const tap=()=>{
+        const wasWon=weekWon(curW),now=!S.tasks[t.id];
+        if(now){S.tasks[t.id]=true;delete S.skips[t.id];r.classList.remove("skipped");sfx("chk");buzz(8);toastMini("+30 → "+MILES.find(m=>m.area===t.area).n);}
+        else delete S.tasks[t.id];
+        save();r.classList.toggle("done",now);
+        el("qc_"+aid).textContent=ts.filter(x=>S.tasks[x.id]).length+" of "+ts.length;
+        r.querySelector(".skipbtn").textContent=S.skips[t.id]?"Skipped":"Skip";
+        syncHeader();syncRing();syncMiles();checkAch();
+        if(!wasWon&&weekWon(curW)){burst(120);sfx("win");buzz([20,40,20]);toast("Week "+w.n+" cleared — the shop is open.");renderQuests();}
       };
-      const sb=q.querySelector(".skp");
-      if(sb)sb.onclick=e=>{e.stopPropagation();
-        if(sk){delete S.skips[t.id];}
-        else{if(baseSkips>=maxSkips){toast(`Skip tokens: ${maxSkips}/${maxSkips} used. Buy one more in the shop — or do the thing.`);return;}
-          S.skips[t.id]=true;}
-        save();render();};
-      el.appendChild(q);
+      r.querySelector(".ck").onclick=tap; r.querySelector(".m").onclick=tap;
+      r.querySelector(".skipbtn").onclick=e=>{
+        e.stopPropagation();
+        if(S.tasks[t.id])return;
+        if(S.skips[t.id]){delete S.skips[t.id];}
+        else{
+          if(usedSkips()>=maxSkips()){toast("Skip used for this week. One more is in the shop — or just do the thing.");return;}
+          S.skips[t.id]=true;
+        }
+        save();r.classList.toggle("skipped",!!S.skips[t.id]);
+        r.querySelector(".skipbtn").textContent=S.skips[t.id]?"Skipped":"Skip";
+        syncRing();
+      };
+      card.appendChild(r);
     });
+    area.appendChild(card);
   }
-  document.getElementById("gutcount").textContent=gutPts(curW)+"/"+w.days+" DAYS";
-  document.getElementById("gutneed").textContent=gutNeed(w);
-  const gc=document.getElementById("gutchips");gc.innerHTML="";
-  if(!S.gut[curW])S.gut[curW]=new Array(w.days).fill(0);
-  const names=["SUN","MON","TUE","WED","THU","FRI","SAT"];
-  for(let i=0;i<w.days;i++){
-    const start=new Date(w.start+"T00:00:00");
-    const dn=names[(start.getDay()+i)%7];
-    const v=S.gut[curW][i]||0;
-    const c=document.createElement("div");
-    c.className="gc"+(v===1?" g1":v===2?" g2":"");
-    c.innerHTML=`<div class="d">${dn}</div><div class="s">${v===0?"⚪":v===1?"🌗":"✅"}</div>`;
-    c.onclick=()=>{const b=gutBonus(curW);S.gut[curW][i]=(v+1)%3;save();render();
-      if(gutBonus(curW)>b){burst(90);sfx("win");toast("🦠 GUT CHAIN COMPLETE — +10 XP +10 G");}else sfx("chk");};
-    gc.appendChild(c);
+  const g=document.createElement("div");g.className="card";
+  const gp=gutPts(curW),need=gutNeed(w);
+  g.innerHTML=`<div class="cardtitle">Meals this week <span class="r">${gp} of ${w.days} clean days</span></div>
+    <div class="note">A clean day = breakfast and lunch both on plan (checked on the Today screen). ${need}+ clean days adds <b>+10 XP</b> to this week.</div>`;
+  area.appendChild(g);
+  if(curW==="W4"&&weekOver("W4")){
+    const e=document.createElement("div");e.className="card empty";
+    e.textContent="Season 1 ends here. Ask Claude for the September pack — Season 2 drops in.";
+    area.appendChild(e);
   }
 }
-function renderRaids(){
-  const el=document.getElementById("raidlist");el.innerHTML="";
-  RAIDS.forEach(r=>{
-    const hp=raidHP(r),dead=!!S.raidDead[r.id],weak=!dead&&hp<=60;
-    const c=document.createElement("div");
-    c.className="raid"+(dead?" dead":"");c.id="raid_"+r.id;
-    c.innerHTML=`<div class="rt"><div class="rico">${r.ico}</div><div class="rn">
-        <small>${dead?"■ TERMINATED":weak?"⚠ WEAKENED — FINISH IT":"RAID TARGET"}</small>
-        <b>${r.name}</b><u>${r.note}</u></div>
-        <div class="rew mono" style="font-size:10px;color:var(--gd);white-space:nowrap;">+50 XP<br>+50 G</div></div>
-      <div class="hpbar"><div class="hpfill" style="width:${hp/r.hp*100}%"></div><div class="hptxt">${dead?"DEFEATED":"HP "+hp+" / "+r.hp}</div></div>
-      <div class="actions"><button class="fblow${weak?" rdy":""}">${dead?"✔ VICTORY LOGGED":"⚔ FINAL BLOW"}</button></div>`;
-    c.querySelector(".fblow").onclick=()=>{
-      if(dead){if(confirm("Undo this victory?")){delete S.raidDead[r.id];save();render();}return;}
-      if(confirm(`FINAL BLOW on ${r.name}?\n\nOnly press this if it's true in real life:\n"${r.note}"\n\nThe System runs on honesty.`)){
-        S.raidDead[r.id]=true;save();
-        c.style.animation="shake .4s";burst(260);sfx("boss");
-        setTimeout(render,380);
-      }
+function renderMiles(){
+  const ml=el("milelist");ml.innerHTML="";
+  MILES.forEach(m=>{
+    const done=!!S.miles[m.id],p=mileProg(m);
+    const x=document.createElement("div");
+    x.className="mile"+(done?" done":"");x.id="mrow_"+m.id;
+    x.innerHTML=`<div class="top"><div class="n">${m.n}</div><div class="pct" id="mp_${m.id}">${done?"Done":Math.round(p/m.goal*100)+"%"}</div></div>
+      <div class="d">${m.d}</div>
+      <div class="mbar"><i id="mb_${m.id}" style="width:${p/m.goal*100}%"></i></div>
+      <div class="act"><button class="mbtn${!done&&p>=m.goal*.8?" rdy":""}" id="mx_${m.id}">${done?"Completed ✓":"Mark complete"}</button></div>`;
+    x.querySelector(".mbtn").onclick=()=>{
+      if(S.miles[m.id]){if(confirm("Undo this milestone?")){delete S.miles[m.id];S.log=S.log.filter(e=>e.id!==m.id);save();render();}return;}
+      if(!confirm(`Completed in real life?\n\n"${m.n}"\n\nThe system runs on honesty.`))return;
+      const note=prompt("Add a note for the journal (score, time, numbers — optional):")||"";
+      S.miles[m.id]=true;S.log.unshift({id:m.id,t:m.n,note,d:todayISO()});save();
+      burst(160);sfx("mile");buzz([30,50,30]);render();
     };
-    el.appendChild(c);
+    ml.appendChild(x);
   });
-}
-function renderShop(){
-  document.getElementById("shopgold").textContent="◈ "+gold()+" G";
-  const el=document.getElementById("shoplist");el.innerHTML="";
-  SHOP.forEach(it=>{
-    const g=gold(),month=new Date().getMonth();
-    const monthOK=it.id==="m9"?month>=8:it.id==="m10"?month>=9:true;
-    const gate = it.type==="treat" ? weekWon(curW)
-      : it.id==="m8" ? (Object.values(S.raidDead).filter(Boolean).length>=3&&WEEKS.filter(w=>weekWon(w.id)).length>=3)
-      : it.type==="token" ? !S.extraSkip[curW]
-      : monthOK;
-    const count=S.purch[it.id]||0;
-    const c=document.createElement("div");c.className="item";
-    c.innerHTML=`<div class="ii">${it.ico}</div><div class="in">${it.n}${count?` <span style="color:var(--gr)">×${count}</span>`:""}<small>${it.d}</small></div>
-      <button class="buy${count&&it.type==="cache"?" owned":""}" ${(!gate||g<it.g)&&!(count&&it.type==="cache")?"disabled":""}>${count&&it.type==="cache"?"OWNED":"◈ "+it.g}</button>`;
-    c.querySelector(".buy").onclick=()=>{
-      if(count&&it.type==="cache")return;
-      if(!gate){toast(it.type==="treat"?"Clear the week first — the meter decides.":"Locked. Meet the condition first.");return;}
-      if(gold()<it.g){toast("Not enough gold. Earn it — quests, directives, raids.");return;}
-      S.spent+=it.g;S.purch[it.id]=count+1;
-      if(it.type==="token")S.extraSkip[curW]=true;
-      save();render();burst(70);sfx("buy");
-      toast(`Purchased: ${it.n}. Enjoy it — you earned it, literally.`);
-    };
-    el.appendChild(c);
-  });
-  const bg=document.getElementById("badgegrid");bg.innerHTML="";
-  ACH.forEach(a=>{
-    const b=document.createElement("div");
-    b.className="bdg"+(S.ach[a.id]?" ok":"");
-    b.innerHTML=`<div class="e">${a.e}</div><div class="n">${a.n}</div>`;
-    b.onclick=()=>toast(`${a.e} ${a.n} — ${a.c} (+${a.g} G)`);
-    bg.appendChild(b);
-  });
-}
-function renderPlayer(){
-  const el=document.getElementById("stats");el.innerHTML="";
-  const defs=[["INT","var(--int)"],["STR","var(--str)"],["GLD","var(--gld)"],["AGI","var(--agi)"],["MND","var(--mnd)"],["VIT","var(--vit)"]];
-  const vals=defs.map(d=>statVal(d[0]));const mx=Math.max(...vals,10);
-  defs.forEach((d,i)=>{
-    const r=document.createElement("div");r.className="strow";r.style.setProperty("--sc",d[1]);
-    r.innerHTML=`<span class="k">${d[0]}</span><div class="bar"><i style="width:${vals[i]/mx*100}%"></i></div><span class="v">${vals[i]}</span>`;
-    el.appendChild(r);
-  });
-  const mini=document.getElementById("mini");mini.innerHTML="";
-  WEEKS.forEach(w=>{
-    const xp=weekXP(w.id);
-    const b=document.createElement("div");b.className="mb";
-    b.style.height=Math.max(xp/110*100,3)+"%";
-    b.className="mb";b.innerHTML=`<i>${xp}</i><u>${w.id}</u>`;
-    mini.appendChild(b);
-  });
-  const lad=document.getElementById("ladder");lad.innerHTML="";
+  const lad=el("ladder");lad.innerHTML="";
   LADDER.forEach(l=>{
-    const got=S.purch["lad_"+l.id];
+    const got=!!S.purch["lad_"+l.id];
     const r=document.createElement("div");r.className="ladrow"+(got?" got":"");
-    r.innerHTML=`<div class="li">${l.ico}</div><div class="ln"><b>${l.n}</b><small>${l.d}</small></div><div class="ld">${got?"✔ MINE":l.w}</div>`;
+    r.innerHTML=`<div class="dot"></div><div class="m"><div class="t">${l.t}</div><div class="s">${l.s}</div></div><div class="w">${got?"Done ✓":l.w}</div>`;
     r.onclick=()=>{
-      if(got){if(confirm("Un-mark this?")){delete S.purch["lad_"+l.id];save();render();}return;}
-      if(confirm(`Mark as achieved IN REALITY?\n\n${l.n}\nGates: ${l.d}`)){S.purch["lad_"+l.id]=1;save();render();burst(300);sfx("boss");}
+      if(got){if(confirm("Undo?")){delete S.purch["lad_"+l.id];S.log=S.log.filter(e=>e.id!=="lad_"+l.id);save();render();}return;}
+      if(!confirm(`Achieved in real life?\n\n${l.t}\nGates: ${l.s}`))return;
+      const note=prompt("Journal note (optional):")||"";
+      S.purch["lad_"+l.id]=1;S.log.unshift({id:"lad_"+l.id,t:l.t,note,d:todayISO()});save();
+      burst(220);sfx("mile");render();
     };
     lad.appendChild(r);
   });
-  const used=Object.keys(S.shields).filter(k=>S.shields[k]).length;
-  let sh=`🛡 Shields: <b style="color:var(--gd)">${Math.max(2-used,0)}/2</b> this month — protect a lost week's streak.<br>🃏 Skip token: 1/week free${S.extraSkip[curW]?" +1 purchased":""} · excuses one quest.`;
-  WEEKS.forEach(w=>{
-    if(weekOver(w.id)&&!weekWon(w.id)&&!S.shields[w.id]&&used<2)
-      sh+=`<br><button class="btn" style="margin-top:6px" onclick="S.shields['${w.id}']=true;save();render();toast('🛡 ${w.id} shielded. The chain holds.')">🛡 SHIELD ${w.id} (${weekXP(w.id)} XP)</button>`;
+}
+function renderShop(){
+  const sl=el("shoplist");sl.innerHTML="";
+  const month=new Date().getMonth();
+  SHOP.forEach(it=>{
+    const count=S.purch[it.id]||0;
+    const gate=it.type==="treat"?weekWon(curW)
+      :it.id==="m8"?(Object.values(S.miles).filter(Boolean).length>=3&&WEEKS.filter(w=>weekWon(w.id)).length>=3)
+      :it.id==="m9"?month>=8:it.id==="m10"?month>=9
+      :it.type==="token"?!S.extraSkip[curW]:true;
+    const afford=pts()>=it.p;
+    const r=document.createElement("div");r.className="itemrow";
+    const owned=count&&it.type==="cache";
+    r.innerHTML=`<div class="m"><div class="t">${it.n}${count&&it.type==="treat"?` <span style="color:var(--green)">×${count}</span>`:""}</div><div class="s">${it.d}</div></div>
+      <button class="pbtn ${owned?"owned":gate&&afford?"can":""}" ${owned?"":gate?"":"disabled"}>${owned?"Owned":it.p+" pts"}</button>`;
+    r.querySelector(".pbtn").onclick=()=>{
+      if(owned)return;
+      if(!gate){toast(it.type==="treat"?"Win the week first — close the ring.":"Locked until the condition is met.");return;}
+      if(!afford){toast("Not enough points. Quests and directives pay.");return;}
+      S.spent+=it.p;S.purch[it.id]=count+1;
+      if(it.type==="token")S.extraSkip[curW]=true;
+      save();sfx("buy");buzz(12);renderShop();syncHeader();
+      toast(it.n+" — enjoy it. You earned it, literally.");
+    };
+    sl.appendChild(r);
   });
-  document.getElementById("shieldinfo").innerHTML=sh;
+  const bg=el("badgegrid");bg.innerHTML="";
+  let n=0;
+  ACH.forEach(a=>{
+    if(S.ach[a.id])n++;
+    const b=document.createElement("div");b.className="bdg"+(S.ach[a.id]?" ok":"");
+    b.innerHTML=`<div class="e">${a.e}</div><div class="n">${a.n}</div>`;
+    b.onclick=()=>toast(a.n+" — "+a.c+" (+"+a.p+" pts)");
+    bg.appendChild(b);
+  });
+  el("achcount").textContent=n+" of "+ACH.length;
+}
+function renderYou(){
+  const at=el("attrs");at.innerHTML="";
+  const defs=["Career","Fitness","Business","Court","Mind","Health"];
+  const vals=defs.map(statVal),mx=Math.max(...vals,10);
+  defs.forEach((k,i)=>{
+    const r=document.createElement("div");r.className="attr";
+    r.innerHTML=`<div class="k">${k}</div><div class="bar"><i style="width:${vals[i]/mx*100}%"></i></div><div class="v">${vals[i]}</div>`;
+    at.appendChild(r);
+  });
+  const wc=el("wchart");wc.innerHTML="";
+  WEEKS.forEach(w=>{
+    const xp=weekXP(w.id);
+    const c=document.createElement("div");c.className="wcol";
+    c.innerHTML=`<div class="wbar${weekWon(w.id)?" win":""}"><i style="height:${Math.max(xp/110*100,2)}%"></i></div><div class="l">W${w.n}</div><div class="n">${xp}</div>`;
+    wc.appendChild(c);
+  });
+  const used=Object.keys(S.shields).filter(k=>S.shields[k]).length;
+  el("buffers").innerHTML=`Skip token — 1 free per week${S.extraSkip[curW]?" (+1 bought)":""}, excuses one quest.<br>Shields — ${Math.max(2-used,0)} of 2 left this month; a shielded week can't break your chain.`;
+  const sb=el("shieldbtns");sb.innerHTML="";
+  WEEKS.forEach(w=>{
+    if(weekOver(w.id)&&!weekWon(w.id)&&!S.shields[w.id]&&used<2){
+      const b=document.createElement("button");b.className="ghost";
+      b.textContent="Shield week "+w.n+" ("+weekXP(w.id)+" XP)";
+      b.onclick=()=>{S.shields[w.id]=true;save();renderYou();toast("Week "+w.n+" shielded. The chain holds.");};
+      sb.appendChild(b);
+    }
+  });
+  const j=el("journal");
+  j.innerHTML=S.log.length?"":`<div class="note">Milestones you complete land here, with your notes. Proof you did it — for the days you doubt it.</div>`;
+  S.log.slice(0,20).forEach(e=>{
+    const r=document.createElement("div");r.className="jrow";
+    r.innerHTML=`<div class="t">${e.t}</div><div class="s">${new Date(e.d+"T12:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short"})}${e.note?" — "+e.note:""}</div>`;
+    j.appendChild(r);
+  });
+  el("sndbtn").textContent="Sound: "+(S.sound?"on":"off");
 }
 
-/* ═══════════════ DATA ═══════════════ */
+/* ════════ DATA ════════ */
 function exportData(){
-  const blob=new Blob([JSON.stringify({v:3,exported:new Date().toISOString(),state:S},null,2)],{type:"application/json"});
+  const blob=new Blob([JSON.stringify({v:4,exported:new Date().toISOString(),state:S},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
   a.download="life-gtm-save-"+todayISO()+".json";a.click();
 }
 function importData(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=()=>{try{const d=JSON.parse(r.result);S=Object.assign(fresh(),d.state||d);save();render();toast("Save imported ✔");}catch(e){toast("Corrupt save file.");}};
+  r.onload=()=>{try{const d=JSON.parse(r.result);S=Object.assign(fresh(),d.state||d);save();render();toast("Save imported.");}catch(e){toast("That file didn't parse.");}};
   r.readAsText(f);
 }
-function resetAll(){if(confirm("ERASE the entire run? Export a save first."))(S=fresh(),save(),render());}
+function resetAll(){if(confirm("Erase the entire run? Export a save first.")){S=fresh();S.intro=true;save();render();}}
 function copySummary(){
   const w=wk(curW);
-  const txt=`${w.label} — ${weekXP(curW)}/${weekPossible(curW)} XP · ${weekWon(curW)?"WON":"—"} · gut ${gutPts(curW)}/${w.days} · bosses ${Object.values(S.raidDead).filter(Boolean).length}/5 · LV.${lvlOf(totalXP()).l} · ${gold()} G`;
-  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Copied — paste into Notion Scoreboard ✔"),()=>prompt("Copy:",txt));
+  const txt=`Week ${w.n} (${w.label}) — ${weekXP(curW)}/${weekPossible(curW)} XP · ${weekWon(curW)?"WON":"—"} · clean days ${gutPts(curW)}/${w.days} · milestones ${Object.values(S.miles).filter(Boolean).length}/5 · Lv ${lvlOf(totalXP()).l} · ${pts()} pts`;
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Copied — paste into the Notion scoreboard."),()=>prompt("Copy:",txt));
 }
+function toggleSound(){S.sound=!S.sound;save();el("sndbtn").textContent="Sound: "+(S.sound?"on":"off");if(S.sound)sfx("tap");}
 
-/* ═══════════════ FX ═══════════════ */
+/* ════════ FX ════════ */
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}};
 let AC=null;
 function sfx(kind){
   if(!S.sound)return;
   try{
     AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended")AC.resume();
     const t=AC.currentTime;
-    const note=(f,st,dur,type,vol)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=type||"square";o.frequency.value=f;
-      g.gain.setValueAtTime(0,t+st);g.gain.linearRampToValueAtTime(vol||.06,t+st+.01);g.gain.exponentialRampToValueAtTime(.0001,t+st+dur);
+    const n=(f,st,dur,vol)=>{const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f;
+      g.gain.setValueAtTime(0,t+st);g.gain.linearRampToValueAtTime(vol||.05,t+st+.012);g.gain.exponentialRampToValueAtTime(.0001,t+st+dur);
       o.connect(g).connect(AC.destination);o.start(t+st);o.stop(t+st+dur+.05);};
-    if(kind==="chk"){note(880,0,.09);note(1320,.07,.12);}
-    if(kind==="win"){note(660,0,.12);note(880,.1,.12);note(1100,.2,.2);}
-    if(kind==="lvl"){note(523,0,.15);note(659,.12,.15);note(784,.24,.15);note(1046,.36,.3,"square",.08);}
-    if(kind==="boss"){note(110,0,.3,"sawtooth",.09);note(82,.12,.4,"sawtooth",.09);note(1046,.3,.3);}
-    if(kind==="buy"){note(1568,0,.07);note(2093,.06,.1);}
-    if(kind==="ach"){note(988,0,.1);note(1319,.09,.18);}
+    if(kind==="chk"){n(920,0,.1);n(1380,.06,.14);}
+    if(kind==="tap"){n(660,0,.05,.03);}
+    if(kind==="win"){n(660,0,.12);n(880,.1,.12);n(1174,.2,.24);}
+    if(kind==="lvl"){n(523,0,.14);n(659,.11,.14);n(784,.22,.14);n(1046,.33,.3,.06);}
+    if(kind==="mile"){n(392,0,.16);n(523,.12,.16);n(784,.24,.3,.06);}
+    if(kind==="buy"){n(1568,0,.07,.04);n(2093,.06,.1,.04);}
+    if(kind==="ach"){n(988,0,.1);n(1319,.09,.2);}
   }catch(e){}
 }
-function toggleSound(e){e.stopPropagation();S.sound=!S.sound;save();document.getElementById("snd").textContent=S.sound?"🔊":"🔇";if(S.sound)sfx("chk");}
-function orbFrom(el){
-  const r=el.getBoundingClientRect(),tr=document.querySelector(".xpbar").getBoundingClientRect();
-  const o=document.createElement("div");o.className="orb";
-  o.style.left=(r.left+30)+"px";o.style.top=(r.top+12)+"px";
-  document.body.appendChild(o);
-  requestAnimationFrame(()=>{o.style.left=(tr.left+tr.width*.5)+"px";o.style.top=tr.top+"px";o.style.opacity=.2;});
-  setTimeout(()=>o.remove(),700);
-}
-function dmgFloat(bid,amt){
-  const host=document.getElementById("raid_"+bid);
-  toastMini(`⚔ ${amt} DMG → ${RAIDS.find(r=>r.id===bid).name}`);
-  if(!host)return;
-  const f=document.createElement("div");f.className="dmgfloat";f.textContent="-"+amt;
-  f.style.left=(40+Math.random()*40)+"%";f.style.top="30%";host.appendChild(f);
-  setTimeout(()=>f.remove(),900);
-}
-let tmini=null;
-function toastMini(m){clearTimeout(tmini);const t=document.getElementById("toast");t.textContent=m;t.style.opacity=1;tmini=setTimeout(()=>t.style.opacity=0,1400);}
-function toast(m){clearTimeout(tmini);const t=document.getElementById("toast");t.textContent=m;t.style.opacity=1;tmini=setTimeout(()=>t.style.opacity=0,3000);}
-const cv=document.getElementById("cfx"),cx=cv.getContext("2d");let parts=[],anim=null;
-function sizeC(){cv.width=innerWidth;cv.height=innerHeight;}addEventListener("resize",sizeC);sizeC();
+let tmr=null;
+function toast(m){const t=el("toast");t.textContent=m;t.style.opacity=1;clearTimeout(tmr);tmr=setTimeout(()=>t.style.opacity=0,2600);}
+function toastMini(m){const t=el("toast");t.textContent=m;t.style.opacity=1;clearTimeout(tmr);tmr=setTimeout(()=>t.style.opacity=0,1300);}
+const cv=el("cfx"),cx=cv.getContext("2d");let parts=[],anim=null;
+function sizeC(){cv.width=innerWidth*(devicePixelRatio||1);cv.height=innerHeight*(devicePixelRatio||1);cv.style.width=innerWidth+"px";cv.style.height=innerHeight+"px";cx.setTransform(devicePixelRatio||1,0,0,devicePixelRatio||1,0,0);}
+addEventListener("resize",sizeC);sizeC();
 function burst(n){
-  const cols=["#00e5ff","#00ff9d","#ffb300","#ff2d78","#a78bff"];
-  for(let i=0;i<n;i++)parts.push({x:innerWidth/2+(Math.random()-.5)*160,y:innerHeight*.3,vx:(Math.random()-.5)*12,vy:-Math.random()*12-3,s:Math.random()*6+3,c:cols[i%5],r:Math.random()*7,vr:(Math.random()-.5)*.3,life:100});
-  if(!anim)tickC();
+  if(RM)return;
+  const cols=[css("--blue"),css("--green"),css("--orange"),"#ffd60a"];
+  for(let i=0;i<n;i++)parts.push({x:innerWidth/2+(Math.random()-.5)*120,y:innerHeight*.28,vx:(Math.random()-.5)*9,vy:-Math.random()*10-2,s:Math.random()*5+2.5,c:cols[i%4],r:Math.random()*7,vr:(Math.random()-.5)*.25,life:90});
+  if(!anim)tick();
 }
-function tickC(){
-  cx.clearRect(0,0,cv.width,cv.height);
-  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.r+=p.vr;p.life--;});
-  parts=parts.filter(p=>p.life>0&&p.y<cv.height+20);
-  parts.forEach(p=>{cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.globalAlpha=Math.min(p.life/35,1);cx.fillRect(-p.s/2,-p.s/2,p.s,p.s);cx.restore();});
-  if(parts.length)anim=requestAnimationFrame(tickC);else{anim=null;cx.clearRect(0,0,cv.width,cv.height);}
+function tick(){
+  cx.clearRect(0,0,innerWidth,innerHeight);
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.28;p.r+=p.vr;p.life--;});
+  parts=parts.filter(p=>p.life>0&&p.y<innerHeight+20);
+  parts.forEach(p=>{cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.globalAlpha=Math.min(p.life/30,1);cx.fillRect(-p.s/2,-p.s/2,p.s,p.s);cx.restore();});
+  if(parts.length)anim=requestAnimationFrame(tick);else{anim=null;cx.clearRect(0,0,innerWidth,innerHeight);}
 }
 
-/* ═══════════════ NAV ═══════════════ */
+/* ════════ NAV / INTRO / BOOT ════════ */
 document.querySelectorAll("nav button").forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
     document.querySelectorAll(".screen").forEach(x=>x.classList.remove("on"));
-    b.classList.add("on");document.getElementById("s-"+b.dataset.s).classList.add("on");
-    scrollTo({top:0});sfx("chk");
+    b.classList.add("on");el("s-"+b.dataset.s).classList.add("on");
+    scrollTo({top:0});sfx("tap");
+    if(b.dataset.s==="today")syncRing();
   };
 });
-document.getElementById("snd").textContent=S.sound?"🔊":"🔇";
+let introStep=0;
+el("introbtn").onclick=()=>{
+  const steps=document.querySelectorAll(".introbox .step"),dots=document.querySelectorAll(".dots i");
+  introStep++;
+  if(introStep>=steps.length){el("intro").classList.remove("on");S.intro=true;save();return;}
+  steps.forEach((s,i)=>s.classList.toggle("on",i===introStep));
+  dots.forEach((d,i)=>d.classList.toggle("on",i===introStep));
+  el("introbtn").textContent=introStep===steps.length-1?"Start":"Continue";
+};
+function showIntro(){introStep=0;
+  document.querySelectorAll(".introbox .step").forEach((s,i)=>s.classList.toggle("on",i===0));
+  document.querySelectorAll(".dots i").forEach((d,i)=>d.classList.toggle("on",i===0));
+  el("introbtn").textContent="Continue";el("intro").classList.add("on");}
+if(!S.intro)showIntro();
+if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
+  addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
 render();
 </script>
 </body>
